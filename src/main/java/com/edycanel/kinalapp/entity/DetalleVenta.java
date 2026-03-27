@@ -13,8 +13,14 @@ public class DetalleVenta {
     @Id
     @Column(name = "codigo_detalle_venta")
     private int codigoDetalleVenta;
+
+    @Column
     private int cantidad;
+
+    @Column
     private BigDecimal precioUnitario;
+
+    @Column
     private BigDecimal subtotal;
 
     public DetalleVenta() {
