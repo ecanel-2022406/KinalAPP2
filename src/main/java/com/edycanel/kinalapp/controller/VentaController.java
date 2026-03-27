@@ -1,7 +1,7 @@
-package com.edycanel.Kinalapp.controller;
+package com.edycanel.kinalapp.controller;
 
-import com.edycanel.Kinalapp.entity.Venta;
-import com.edycanel.Kinalapp.service.IVentaService;
+import com.edycanel.kinalapp.entity.Venta;
+import com.edycanel.kinalapp.service.IVentaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
