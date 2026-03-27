@@ -1,7 +1,7 @@
-package com.edycanel.Kinalapp.service;
+package com.edycanel.kinalapp.service;
 
-import com.edycanel.Kinalapp.entity.Venta;
-import com.edycanel.Kinalapp.repository.VentaRepository;
+import com.edycanel.kinalapp.entity.Venta;
+import com.edycanel.kinalapp.repository.VentaRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 

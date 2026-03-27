@@ -1,4 +1,4 @@
-package com.edycanel.Kinalapp.entity;
+package com.edycanel.kinalapp.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

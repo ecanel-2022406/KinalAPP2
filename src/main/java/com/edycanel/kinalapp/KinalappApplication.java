@@ -1,4 +1,4 @@
-package com.edycanel.Kinalapp;
+package com.edycanel.kinalapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

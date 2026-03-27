@@ -1,6 +1,6 @@
-package com.edycanel.Kinalapp.repository;
+package com.edycanel.kinalapp.repository;
 
-import com.edycanel.Kinalapp.entity.Cliente;
+import com.edycanel.kinalapp.entity.Cliente;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ClienteRepository extends JpaRepository<Cliente, String> {
