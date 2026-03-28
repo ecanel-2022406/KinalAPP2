@@ -1,9 +1,7 @@
 package com.edycanel.kinalapp.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
@@ -23,14 +21,20 @@ public class DetalleVenta {
     @Column
     private BigDecimal subtotal;
 
+    @ManyToOne
+    @JoinColumn(name = "productos_codigo_producto", referencedColumnName = "codigo_producto", nullable = false)
+    @JsonIgnoreProperties({"detallesVenta", "nombreProducto", "precio", "stock", "estado"})
+    private Producto producto;
+
     public DetalleVenta() {
     }
 
-    public DetalleVenta(int codigoDetalleVenta, int cantidad, BigDecimal precioUnitario, BigDecimal subtotal) {
+    public DetalleVenta(int codigoDetalleVenta, int cantidad, BigDecimal precioUnitario, BigDecimal subtotal, Producto producto, Venta venta) {
         this.codigoDetalleVenta = codigoDetalleVenta;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.subtotal = subtotal;
+        this.producto = producto;
     }
 
     public int getCodigoDetalleVenta() {
@@ -63,5 +67,13 @@ public class DetalleVenta {
 
     public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
 }
