@@ -1,10 +1,7 @@
 package com.edycanel.kinalapp.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -24,14 +21,21 @@ public class Venta {
     @Column
     private  int estado;
 
+    @ManyToOne
+    @JoinColumn(name = "clientes_dpi_cliente", referencedColumnName = "dpi_cliente", nullable = false)
+    @JsonIgnoreProperties({"nombreCliente", "apellidoCliente", "direccion", "estado"})
+    private Cliente cliente;
+
+
     public Venta() {
     }
 
-    public Venta(int codigoVenta, LocalDate fechaVenta, BigDecimal total, int estado) {
+    public Venta(int codigoVenta, LocalDate fechaVenta, BigDecimal total, int estado, Cliente cliente, Usuario usuario) {
         this.codigoVenta = codigoVenta;
         this.fechaVenta = fechaVenta;
         this.total = total;
         this.estado = estado;
+        this.cliente = cliente;
     }
 
     public int getCodigoVenta() {
@@ -65,4 +69,13 @@ public class Venta {
     public void setEstado(int estado) {
         this.estado = estado;
     }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+    
 }
