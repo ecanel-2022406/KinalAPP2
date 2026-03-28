@@ -26,6 +26,11 @@ public class DetalleVenta {
     @JsonIgnoreProperties({"detallesVenta", "nombreProducto", "precio", "stock", "estado"})
     private Producto producto;
 
+    @ManyToOne
+    @JoinColumn(name = "ventas_codigo_venta", referencedColumnName = "codigo_venta", nullable = false)
+    @JsonIgnoreProperties({"detallesVenta", "fechaVenta", "total", "estado", "cliente", "usuario"})
+    private Venta venta;
+
     public DetalleVenta() {
     }
 
@@ -35,6 +40,7 @@ public class DetalleVenta {
         this.precioUnitario = precioUnitario;
         this.subtotal = subtotal;
         this.producto = producto;
+        this.venta = venta;
     }
 
     public int getCodigoDetalleVenta() {
@@ -75,5 +81,13 @@ public class DetalleVenta {
 
     public void setProducto(Producto producto) {
         this.producto = producto;
+    }
+
+    public Venta getVenta() {
+        return venta;
+    }
+
+    public void setVenta(Venta venta) {
+        this.venta = venta;
     }
 }
