@@ -26,6 +26,10 @@ public class Venta {
     @JsonIgnoreProperties({"nombreCliente", "apellidoCliente", "direccion", "estado"})
     private Cliente cliente;
 
+    @ManyToOne
+    @JoinColumn(name = "usuarios_codigo_usuario", referencedColumnName = "codigo_usuario", nullable = false)
+    @JsonIgnoreProperties({"username", "password", "email", "rol", "estado"})
+    private Usuario usuario;
 
     public Venta() {
     }
@@ -36,6 +40,7 @@ public class Venta {
         this.total = total;
         this.estado = estado;
         this.cliente = cliente;
+        this.usuario = usuario;
     }
 
     public int getCodigoVenta() {
@@ -77,5 +82,12 @@ public class Venta {
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
-    
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 }
