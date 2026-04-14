@@ -94,4 +94,10 @@ public class UsuarioService implements IUsuarioService {
             throw new IllegalArgumentException("El rol es obligatorio");
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Usuario> login(String username, String password){
+        return usuarioRepository.findByUsernameAndPassword(username, password);
+    }
 }

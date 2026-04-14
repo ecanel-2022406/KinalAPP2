@@ -23,4 +23,6 @@ public interface IUsuarioService {
     void eliminar(int codigoUsuario);
 
     boolean existePorCodigoUsuario(int codigoUsuario);
+
+    Optional<Usuario> login(String username, String password);
 }
