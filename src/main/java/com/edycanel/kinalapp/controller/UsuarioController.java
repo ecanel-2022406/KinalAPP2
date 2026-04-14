@@ -80,5 +80,14 @@ public class UsuarioController {
         }
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@RequestBody Usuario usuario) {
 
+        return usuarioService.login(usuario.getUsername(), usuario.getPassword())
+                .<ResponseEntity<Object>>map(user -> ResponseEntity.ok(user))
+                .orElse(
+                        ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body("Usuario o contraseña incorrectos")
+                );
+    }
 }
