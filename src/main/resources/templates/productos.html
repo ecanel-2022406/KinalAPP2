@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KinalApp | Productos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4 bg-light">
+<div class="container bg-white p-4 shadow-sm rounded">
+    <h2 class="mb-4 text-primary">Gestión de Productos</h2>
+
+    <div class="row g-2 mb-4 p-3 border rounded bg-light">
+        <div class="col-md-4"><input type="number" id="searchId" class="form-control" placeholder="ID a buscar..."></div>
+        <div class="col-md-2"><button class="btn btn-primary w-100" onclick="buscarPorId()">Buscar ID</button></div>
+        <div class="col-md-3">
+            <select id="searchEstado" class="form-select">
+                <option value="">Filtrar por Estado...</option>
+                <option value="1">1 - Activo</option>
+                <option value="0">0 - Inactivo</option>
+            </select>
+        </div>
+        <div class="col-md-3"><button class="btn btn-info w-100 text-white" onclick="buscarPorEstado()">Filtrar Estado</button></div>
+    </div>
+
+    <div class="row g-2 mb-3">
+        <div class="col-md-2"><input type="number" id="codigo" placeholder="ID" class="form-control"></div>
+        <div class="col-md-3"><input type="text" id="nombre" placeholder="Nombre Producto" class="form-control"></div>
+        <div class="col-md-2"><input type="number" step="0.01" id="precio" placeholder="Precio" class="form-control"></div>
+        <div class="col-md-2"><input type="number" id="stock" placeholder="Stock" class="form-control"></div>
+        <div class="col-md-3">
+            <select id="estado" class="form-select">
+                <option value="1">1 - Activo</option>
+                <option value="0">0 - Inactivo</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <button onclick="guardar()" class="btn btn-success">Guardar</button>
+        <button onclick="actualizar()" class="btn btn-warning">Actualizar</button>
+        <button onclick="eliminar()" class="btn btn-danger">Eliminar</button>
+        <button onclick="cargar()" class="btn btn-secondary">Limpiar/Ver Todos</button>
+        <a href="/menu" class="btn btn-dark">Regresar</a>
+    </div>
+
+    <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+        <tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Estado</th></tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+    </table>
+</div>
+
+<script>
+    const API = "/api/productos";
+    function cargar() { fetch(API).then(r => r.json()).then(data => dibujar(data)); }
+    function buscarPorId() {
+        const id = document.getElementById("searchId").value;
+        fetch(`${API}/${id}`).then(r => r.ok ? r.json() : null).then(d => d ? dibujar([d]) : alert("No encontrado"));
+    }
+    function buscarPorEstado() {
+        const est = document.getElementById("searchEstado").value;
+        fetch(`${API}/estado/${est}`).then(r => r.json()).then(data => dibujar(data));
+    }
+    function dibujar(data) {
+        let tabla = document.getElementById("tabla");
+        tabla.innerHTML = "";
+        data.forEach(p => {
+            tabla.innerHTML += `<tr onclick="seleccionar(${p.codigoProducto},'${p.nombreProducto}',${p.precio},${p.stock},${p.estado})" style="cursor:pointer">
+                <td>${p.codigoProducto}</td><td>${p.nombreProducto}</td><td>Q${p.precio}</td><td>${p.stock}</td>
+                <td><span class="badge ${p.estado==1?'bg-success':'bg-danger'}">${p.estado}</span></td></tr>`;
+        });
+    }
+    function seleccionar(c, n, p, s, e) {
+        document.getElementById("codigo").value = c; document.getElementById("nombre").value = n;
+        document.getElementById("precio").value = p; document.getElementById("stock").value = s;
+        document.getElementById("estado").value = e;
+    }
+    function obtenerJson() {
+        return { codigoProducto: document.getElementById("codigo").value, nombreProducto: document.getElementById("nombre").value,
+                 precio: document.getElementById("precio").value, stock: document.getElementById("stock").value, estado: document.getElementById("estado").value };
+    }
+    function guardar() { fetch(API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(obtenerJson())}).then(() => cargar()); }
+    function actualizar() { fetch(`${API}/${document.getElementById("codigo").value}`, {method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify(obtenerJson())}).then(() => cargar()); }
+    function eliminar() { fetch(`${API}/${document.getElementById("codigo").value}`, {method:"DELETE"}).then(() => cargar()); }
+    cargar();
+</script>
+</body>
+</html>
