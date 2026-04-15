@@ -6,11 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class VistaController {
 
-    // @GetMapping("/menu")
-    // public String menu(){
-       // return "menu";
-    // }
-
     @GetMapping("/clientes-vista")
     public String clientes(){
         return "clientes";

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
+
 @Entity
 @Table(name = "detalles_ventas")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -29,6 +30,17 @@ public class DetalleVenta {
     @ManyToOne
     @JoinColumn(name = "productos_codigo_producto")
     private Producto producto;
+
+    public DetalleVenta() {}
+
+    public DetalleVenta(Integer codigoDetalleVenta, Integer cantidad, BigDecimal precioUnitario, BigDecimal subtotal, Venta venta, Producto producto) {
+        this.codigoDetalleVenta = codigoDetalleVenta;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
+        this.subtotal = subtotal;
+        this.venta = venta;
+        this.producto = producto;
+    }
 
     public Integer getCodigoDetalleVenta() {
         return codigoDetalleVenta;
