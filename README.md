@@ -23,7 +23,7 @@ la base de datos directamente.
   Ir a google y buscar Intellij IDEA
 * **Paso 2:**
   Descargar e instalar Intellij IDEA
-* **Paso 3**
+* **Paso 3:**
   Ejecutar Intellij IDEA
 * **Paso 4:**
   Descargar el archivo
