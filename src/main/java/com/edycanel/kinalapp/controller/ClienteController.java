@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 //@RestController = @Controller + @ResponseBody
-@RequestMapping("/clientes")
+@RequestMapping("/api/clientes")
 // Todas las rutas en este controlador deben empezar con /clientes
 public class ClienteController {
 

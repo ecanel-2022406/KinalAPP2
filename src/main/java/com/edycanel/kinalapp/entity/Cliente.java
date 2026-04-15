@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 public class Cliente {
     @Id
     @Column(name = "dpi_cliente")
-    private String DPICliente;
+    private String dpiCliente; // Minúscula al inicio
 
     @Column
     private String nombreCliente;
@@ -24,54 +24,29 @@ public class Cliente {
     @Column
     private int estado;
 
-    public Cliente(){
-    }
+    public Cliente() {}
 
-    public Cliente(String DPICliente, String nombreCliente, String apellidoCliente, String direccion, int estado) {
-        this.DPICliente = DPICliente;
+    public Cliente(String dpiCliente, String nombreCliente, String apellidoCliente, String direccion, int estado) {
+        this.dpiCliente = dpiCliente;
         this.nombreCliente = nombreCliente;
         this.apellidoCliente = apellidoCliente;
         this.direccion = direccion;
         this.estado = estado;
     }
 
-    public String getDPICliente() {
-        return DPICliente;
-    }
+    // Getters y Setters corregidos
+    public String getDpiCliente() { return dpiCliente; }
+    public void setDpiCliente(String dpiCliente) { this.dpiCliente = dpiCliente; }
 
-    public void setDPICliente(String DPICliente) {
-        this.DPICliente = DPICliente;
-    }
+    public String getNombreCliente() { return nombreCliente; }
+    public void setNombreCliente(String nombreCliente) { this.nombreCliente = nombreCliente; }
 
-    public String getNombreCliente() {
-        return nombreCliente;
-    }
+    public String getApellidoCliente() { return apellidoCliente; }
+    public void setApellidoCliente(String apellidoCliente) { this.apellidoCliente = apellidoCliente; }
 
-    public void setNombreCliente(String nombreCliente) {
-        this.nombreCliente = nombreCliente;
-    }
+    public String getDireccion() { return direccion; }
+    public void setDireccion(String direccion) { this.direccion = direccion; }
 
-    public String getApellidoCliente() {
-        return apellidoCliente;
-    }
-
-    public void setApellidoCliente(String apellidoCliente) {
-        this.apellidoCliente = apellidoCliente;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public int getEstado() {
-        return estado;
-    }
-
-    public void setEstado(int estado) {
-        this.estado = estado;
-    }
+    public int getEstado() { return estado; }
+    public void setEstado(int estado) { this.estado = estado; }
 }
