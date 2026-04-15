@@ -40,7 +40,7 @@
         <button onclick="guardar()" class="btn btn-success">Guardar</button>
         <button onclick="actualizar()" class="btn btn-warning">Actualizar</button>
         <button onclick="eliminar()" class="btn btn-danger">Eliminar</button>
-        <button onclick="cargar()" class="btn btn-secondary">Ver Todos</button>
+        <button onclick="cargar()" class="btn btn-secondary">Refrescar</button>
         <a href="/menu" class="btn btn-dark">Regresar</a>
     </div>
 
@@ -53,38 +53,63 @@
 </div>
 
 <script>
-    const API = "/api/usuarios";
+    const API = "/usuarios";
+
     function cargar() { fetch(API).then(r => r.json()).then(data => dibujar(data)); }
+
     function buscarPorId() {
         const id = document.getElementById("searchId").value;
         fetch(`${API}/${id}`).then(r => r.ok ? r.json() : null).then(d => d ? dibujar([d]) : alert("No encontrado"));
     }
+
     function buscarPorEstado() {
         const est = document.getElementById("searchEstado").value;
         fetch(`${API}/estado/${est}`).then(r => r.json()).then(data => dibujar(data));
     }
+
     function dibujar(data) {
         let tabla = document.getElementById("tabla");
         tabla.innerHTML = "";
         data.forEach(u => {
-            tabla.innerHTML += `<tr onclick="seleccionar(${u.codigoUsuario},'${u.username}','${u.password}','${u.email}','${u.rol}',${u.estado})" style="cursor:pointer">
-                <td>${u.codigoUsuario}</td><td>${u.username}</td><td>${u.email}</td><td>${u.rol}</td>
-                <td><span class="badge ${u.estado==1?'bg-success':'bg-danger'}">${u.estado}</span></td></tr>`;
+            tabla.innerHTML += `
+                <tr onclick="seleccionar(${u.codigoUsuario},'${u.username}','${u.password}','${u.email}','${u.rol}',${u.estado})" style="cursor:pointer">
+                    <td>${u.codigoUsuario}</td><td>${u.username}</td><td>${u.email}</td><td>${u.rol}</td>
+                    <td><span class="badge ${u.estado==1?'bg-success':'bg-danger'}">${u.estado}</span></td>
+                </tr>`;
         });
     }
+
     function seleccionar(c, u, p, em, r, e) {
         document.getElementById("codigo").value = c; document.getElementById("user").value = u;
         document.getElementById("pass").value = p; document.getElementById("email").value = em;
         document.getElementById("rol").value = r; document.getElementById("estado").value = e;
     }
-    function obtenerJson() {
-        return { codigoUsuario: document.getElementById("codigo").value, username: document.getElementById("user").value,
-                 password: document.getElementById("pass").value, email: document.getElementById("email").value,
-                 rol: document.getElementById("rol").value, estado: document.getElementById("estado").value };
+
+    function obtenerData() {
+        return {
+            codigoUsuario: document.getElementById("codigo").value,
+            username: document.getElementById("user").value,
+            password: document.getElementById("pass").value,
+            email: document.getElementById("email").value,
+            rol: document.getElementById("rol").value,
+            estado: document.getElementById("estado").value
+        };
     }
-    function guardar() { fetch(API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(obtenerJson())}).then(() => cargar()); }
-    function actualizar() { fetch(`${API}/${document.getElementById("codigo").value}`, {method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify(obtenerJson())}).then(() => cargar()); }
-    function eliminar() { fetch(`${API}/${document.getElementById("codigo").value}`, {method:"DELETE"}).then(() => cargar()); }
+
+    function guardar() {
+        fetch(API, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(obtenerData()) }).then(() => cargar());
+    }
+
+    function actualizar() {
+        const id = document.getElementById("codigo").value;
+        fetch(`${API}/${id}`, { method: "PUT", headers: {"Content-Type":"application/json"}, body: JSON.stringify(obtenerData()) }).then(() => cargar());
+    }
+
+    function eliminar() {
+        const id = document.getElementById("codigo").value;
+        fetch(`${API}/${id}`, { method: "DELETE" }).then(() => cargar());
+    }
+
     cargar();
 </script>
 </body>

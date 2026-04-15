@@ -1,5 +1,6 @@
 package com.edycanel.kinalapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -8,33 +9,31 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "Ventas")
 public class Venta {
-    @Id
-    @Column(name = "codigo_venta")
-    private int codigoVenta;
 
-    @Column
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "codigo_venta")
+    private Integer codigoVenta;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaVenta;
 
-    @Column
     private BigDecimal total;
 
-    @Column
-    private  int estado;
+    private Integer estado;
 
     @ManyToOne
-    @JoinColumn(name = "clientes_dpi_cliente", referencedColumnName = "dpi_cliente", nullable = false)
-    @JsonIgnoreProperties({"nombreCliente", "apellidoCliente", "direccion", "estado"})
+    @JoinColumn(name = "clientes_dpi_cliente")
     private Cliente cliente;
 
     @ManyToOne
-    @JoinColumn(name = "usuarios_codigo_usuario", referencedColumnName = "codigo_usuario", nullable = false)
-    @JsonIgnoreProperties({"username", "password", "email", "rol", "estado"})
+    @JoinColumn(name = "usuarios_codigo_usuario")
     private Usuario usuario;
 
     public Venta() {
     }
 
-    public Venta(int codigoVenta, LocalDate fechaVenta, BigDecimal total, int estado, Cliente cliente, Usuario usuario) {
+    public Venta(Integer codigoVenta, LocalDate fechaVenta, BigDecimal total, int estado, Cliente cliente, Usuario usuario) {
         this.codigoVenta = codigoVenta;
         this.fechaVenta = fechaVenta;
         this.total = total;
@@ -43,11 +42,11 @@ public class Venta {
         this.usuario = usuario;
     }
 
-    public int getCodigoVenta() {
+    public Integer getCodigoVenta() {
         return codigoVenta;
     }
 
-    public void setCodigoVenta(int codigoVenta) {
+    public void setCodigoVenta(Integer codigoVenta) {
         this.codigoVenta = codigoVenta;
     }
 
