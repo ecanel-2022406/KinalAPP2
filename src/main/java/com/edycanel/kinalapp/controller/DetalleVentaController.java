@@ -33,6 +33,8 @@ public class DetalleVentaController {
 
     @PostMapping
     public ResponseEntity<?> guardar(@RequestBody DetalleVenta detalleVenta){
+        System.out.println(">>> Entró al POST /detalleventas");
+
         try{
             DetalleVenta nuevo = detalleVentaService.guardar(detalleVenta);
             return new ResponseEntity<>(nuevo, HttpStatus.CREATED);

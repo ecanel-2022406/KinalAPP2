@@ -2,59 +2,55 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>KinalApp | Ventas</title>
+    <title>KinalApp | Gestión de Ventas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="p-4 bg-light">
 
-<div class="container bg-white p-4 shadow-sm rounded">
+<div class="container bg-white p-4 shadow rounded">
     <h2 class="mb-4 text-primary">Gestión de Ventas</h2>
 
-    <div class="row g-2 mb-3">
-        <div class="col-md-2">
-            <input type="number" id="codigo" class="form-control" placeholder="ID Venta" disabled>
-        </div>
-
+    <!-- FORMULARIO -->
+    <div class="row g-3 mb-4">
         <div class="col-md-3">
+            <label class="form-label">Fecha</label>
             <input type="date" id="fecha" class="form-control">
         </div>
 
         <div class="col-md-3">
-            <select id="cliente" class="form-select"></select>
+            <label class="form-label">DPI Cliente</label>
+            <input type="text" id="cliente" class="form-control" placeholder="Ingrese DPI">
         </div>
 
-        <div class="col-md-2">
-            <select id="usuario" class="form-select"></select>
+        <div class="col-md-3">
+            <label class="form-label">ID Usuario</label>
+            <input type="number" id="usuario" class="form-control" placeholder="Código usuario">
         </div>
 
-        <div class="col-md-2">
-            <input type="number" id="total" class="form-control" placeholder="Total Q" step="0.01" min="0">
-        </div>
-    </div>
-
-    <div class="row g-2 mb-4">
-        <div class="col-md-2">
+        <div class="col-md-3">
+            <label class="form-label">Estado</label>
             <select id="estado" class="form-select">
-                <option value="1">1 - Activa</option>
-                <option value="0">0 - Inactiva</option>
+                <option value="1">Activa</option>
+                <option value="0">Inactiva</option>
             </select>
         </div>
     </div>
 
+    <!-- BOTONES -->
     <div class="mb-4">
-        <button onclick="guardar()" class="btn btn-success">Guardar</button>
-        <button onclick="cargar()" class="btn btn-secondary">Limpiar / Ver Todos</button>
-        <a href="/menu" class="btn btn-dark">Regresar</a>
+        <button class="btn btn-success me-2" onclick="guardar()">Guardar</button>
+        <button class="btn btn-secondary" onclick="cargar()">Refrescar</button>
+        <a href="/menu" class="btn btn-dark ms-2">Regresar</a>
     </div>
 
-    <table class="table table-hover table-bordered">
+    <!-- TABLA -->
+    <table class="table table-bordered table-hover">
         <thead class="table-dark">
         <tr>
             <th>ID</th>
             <th>Fecha</th>
             <th>Cliente</th>
             <th>Usuario</th>
-            <th>Total</th>
             <th>Estado</th>
         </tr>
         </thead>
@@ -63,99 +59,71 @@
 </div>
 
 <script>
-    const API_VENTAS = "/ventas";
-    const API_CLIENTES = "/api/clientes";
-    const API_USUARIOS = "/usuarios";
+    const API = "/ventas";
 
+    /* ---------------- LISTAR ---------------- */
     function cargar() {
-        fetch(API_VENTAS)
-            .then(r => r.json())
-            .then(data => dibujarTabla(data));
-    }
-
-    function cargarClientes() {
-        fetch(API_CLIENTES)
+        fetch(API)
             .then(r => r.json())
             .then(data => {
-                const select = document.getElementById("cliente");
-                select.innerHTML = "";
-                data.forEach(c => {
-                    select.innerHTML += `
-                        <option value="${c.dpiCliente}">
-                            ${c.dpiCliente} - ${c.nombreCliente} ${c.apellidoCliente}
-                        </option>`;
+                const tabla = document.getElementById("tabla");
+                tabla.innerHTML = "";
+                data.forEach(v => {
+                    tabla.innerHTML += `
+                        <tr>
+                            <td>${v.codigoVenta}</td>
+                            <td>${v.fechaVenta}</td>
+                            <td>${v.cliente?.dpiCliente ?? ""}</td>
+                            <td>${v.usuario?.codigoUsuario ?? ""}</td>
+                            <td>
+                                <span class="badge ${v.estado == 1 ? 'bg-success' : 'bg-danger'}">
+                                    ${v.estado}
+                                </span>
+                            </td>
+                        </tr>`;
                 });
             });
     }
 
-    function cargarUsuarios() {
-        fetch(API_USUARIOS)
-            .then(r => r.json())
-            .then(data => {
-                const select = document.getElementById("usuario");
-                select.innerHTML = "";
-                data.forEach(u => {
-                    select.innerHTML += `
-                        <option value="${u.codigoUsuario}">
-                            ${u.codigoUsuario} - ${u.username}
-                        </option>`;
-                });
-            });
-    }
-
-    function dibujarTabla(data) {
-        const tabla = document.getElementById("tabla");
-        tabla.innerHTML = "";
-        data.forEach(v => {
-            tabla.innerHTML += `
-                <tr>
-                    <td>${v.codigoVenta}</td>
-                    <td>${v.fechaVenta}</td>
-                    <td>${v.cliente.dpiCliente}</td>
-                    <td>${v.usuario.codigoUsuario}</td>
-                    <td>Q${Number(v.total).toFixed(2)}</td>
-                    <td>
-                        <span class="badge ${v.estado == 1 ? 'bg-success' : 'bg-danger'}">
-                            ${v.estado}
-                        </span>
-                    </td>
-                </tr>`;
-        });
-    }
-
+    /* ---------------- GUARDAR ---------------- */
     function guardar() {
         const venta = {
             fechaVenta: document.getElementById("fecha").value,
-            total: document.getElementById("total").value,
-            estado: document.getElementById("estado").value,
+            estado: Number(document.getElementById("estado").value),
             cliente: {
                 dpiCliente: document.getElementById("cliente").value
             },
             usuario: {
-                codigoUsuario: document.getElementById("usuario").value
+                codigoUsuario: Number(document.getElementById("usuario").value)
             }
         };
 
-        fetch(API_VENTAS, {
+        fetch(API, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(venta)
         })
+        .then(r => {
+            if (!r.ok) return r.text().then(t => { throw t });
+            return r.json();
+        })
         .then(() => {
+            alert("Venta guardada correctamente");
             limpiar();
             cargar();
-        });
+        })
+        .catch(err => alert("Error del servidor: " + err));
     }
 
+    /* ---------------- LIMPIAR ---------------- */
     function limpiar() {
         document.getElementById("fecha").value = "";
-        document.getElementById("total").value = "";
-        document.getElementById("estado").value = 1;
+        document.getElementById("cliente").value = "";
+        document.getElementById("usuario").value = "";
+        document.getElementById("estado").value = "1";
     }
 
     cargar();
-    cargarClientes();
-    cargarUsuarios();
 </script>
 
 </body>
