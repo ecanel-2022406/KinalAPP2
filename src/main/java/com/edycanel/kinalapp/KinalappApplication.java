@@ -9,5 +9,5 @@ public class KinalappApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(KinalappApplication.class, args);
 	}
-
+	
 }
