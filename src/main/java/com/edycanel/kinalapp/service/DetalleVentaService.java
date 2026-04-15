@@ -1,7 +1,11 @@
 package com.edycanel.kinalapp.service;
 
 import com.edycanel.kinalapp.entity.DetalleVenta;
+import com.edycanel.kinalapp.entity.Producto;
+import com.edycanel.kinalapp.entity.Venta;
 import com.edycanel.kinalapp.repository.DetalleVentaRepository;
+import com.edycanel.kinalapp.repository.ProductoRepository;
+import com.edycanel.kinalapp.repository.VentaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,65 +17,82 @@ import java.util.Optional;
 @Transactional
 public class DetalleVentaService implements IDetalleVentaService {
 
-    private final DetalleVentaRepository detalleVentaRepository;
+    private final DetalleVentaRepository detalleRepo;
+    private final VentaRepository ventaRepo;
+    private final ProductoRepository productoRepo;
 
-    public DetalleVentaService(DetalleVentaRepository detalleVentaRepository){
-        this.detalleVentaRepository = detalleVentaRepository;
+    public DetalleVentaService(DetalleVentaRepository detalleRepo,
+                               VentaRepository ventaRepo,
+                               ProductoRepository productoRepo) {
+        this.detalleRepo = detalleRepo;
+        this.ventaRepo = ventaRepo;
+        this.productoRepo = productoRepo;
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<DetalleVenta> listarTodos(){
-        return detalleVentaRepository.findAll();
-    }
-
-    @Override
-    public DetalleVenta guardar(DetalleVenta detalleVenta) {
-        validarDetalleVenta(detalleVenta);
-        detalleVenta.setSubtotal(
-                detalleVenta.getPrecioUnitario()
-                        .multiply(BigDecimal.valueOf(detalleVenta.getCantidad()))
-        );
-        return detalleVentaRepository.save(detalleVenta);
+    public List<DetalleVenta> listarTodos() {
+        return detalleRepo.findAll();
     }
 
     @Override
     public Optional<DetalleVenta> buscarPorCodigoDetalleVenta(int codigoDetalleVenta) {
-        return detalleVentaRepository.findById(codigoDetalleVenta);
+        return detalleRepo.findById(codigoDetalleVenta);
     }
 
     @Override
-    public DetalleVenta actualizar(int codigoDetalleVenta, DetalleVenta detalleVenta) {
-        if (!detalleVentaRepository.existsById(codigoDetalleVenta)) {
-            throw new RuntimeException("DetalleVenta no encontrado");
-        }
+    public DetalleVenta guardar(DetalleVenta detalle) {
 
-        detalleVenta.setCodigoDetalleVenta(codigoDetalleVenta);
-        validarDetalleVenta(detalleVenta);
+        Venta venta = ventaRepo.findById(
+                detalle.getVenta().getCodigoVenta()
+        ).orElseThrow(() -> new IllegalArgumentException("Venta no existe"));
 
-        detalleVenta.setSubtotal(
-                detalleVenta.getPrecioUnitario()
-                        .multiply(BigDecimal.valueOf(detalleVenta.getCantidad()))
-        );
+        Producto producto = productoRepo.findById(
+                detalle.getProducto().getCodigoProducto()
+        ).orElseThrow(() -> new IllegalArgumentException("Producto no existe"));
 
-        return detalleVentaRepository.save(detalleVenta);
+        detalle.setVenta(venta);
+        detalle.setProducto(producto);
+
+        BigDecimal subtotal = detalle.getPrecioUnitario()
+                .multiply(BigDecimal.valueOf(detalle.getCantidad()));
+
+        detalle.setSubtotal(subtotal);
+
+        return detalleRepo.save(detalle);
+    }
+
+    @Override
+    public DetalleVenta actualizar(int codigoDetalleVenta, DetalleVenta detalle) {
+
+        DetalleVenta existente = detalleRepo.findById(codigoDetalleVenta)
+                .orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
+
+        Venta venta = ventaRepo.findById(
+                detalle.getVenta().getCodigoVenta()
+        ).orElseThrow(() -> new IllegalArgumentException("Venta no existe"));
+
+        Producto producto = productoRepo.findById(
+                detalle.getProducto().getCodigoProducto()
+        ).orElseThrow(() -> new IllegalArgumentException("Producto no existe"));
+
+        existente.setCantidad(detalle.getCantidad());
+        existente.setPrecioUnitario(detalle.getPrecioUnitario());
+        existente.setVenta(venta);
+        existente.setProducto(producto);
+
+        BigDecimal subtotal = detalle.getPrecioUnitario()
+                .multiply(BigDecimal.valueOf(detalle.getCantidad()));
+
+        existente.setSubtotal(subtotal);
+
+        return detalleRepo.save(existente);
     }
 
     @Override
     public void eliminar(int codigoDetalleVenta) {
-        if (!detalleVentaRepository.existsById(codigoDetalleVenta)) {
-            throw new RuntimeException("DetalleVenta no encontrado");
+        if (!detalleRepo.existsById(codigoDetalleVenta)) {
+            throw new RuntimeException("Detalle no encontrado");
         }
-        detalleVentaRepository.deleteById(codigoDetalleVenta);
-    }
-
-    private void validarDetalleVenta(DetalleVenta detalleVenta){
-        if (detalleVenta.getCantidad() <= 0){
-            throw new IllegalArgumentException("Cantidad inválida");
-        }
-
-        if (detalleVenta.getPrecioUnitario() == null){
-            throw new IllegalArgumentException("Precio requerido");
-        }
+        detalleRepo.deleteById(codigoDetalleVenta);
     }
 }

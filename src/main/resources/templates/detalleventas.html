@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>KinalApp | Detalle Ventas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4 bg-light">
+<div class="container bg-white p-4 shadow-sm rounded">
+    <h2 class="mb-4 text-primary">Detalles de Venta</h2>
+
+    <div class="row g-2 mb-4 p-3 border rounded bg-light">
+        <div class="col-md-3"><input type="number" id="searchId" class="form-control" placeholder="ID Detalle..."></div>
+        <div class="col-md-2"><button class="btn btn-primary w-100" onclick="buscarPorId()">Buscar ID</button></div>
+    </div>
+
+    <div class="row g-2 mb-3">
+        <div class="col-md-2"><input type="number" id="codigo" placeholder="ID Detalle" class="form-control"></div>
+        <div class="col-md-2"><input type="number" id="idVenta" placeholder="ID Venta" class="form-control"></div>
+        <div class="col-md-2"><input type="number" id="idProd" placeholder="ID Prod" class="form-control"></div>
+        <div class="col-md-2"><input type="number" id="cantidad" placeholder="Cant" oninput="calc()" class="form-control"></div>
+        <div class="col-md-2"><input type="number" step="0.01" id="precio" placeholder="Precio U" oninput="calc()" class="form-control"></div>
+        <div class="col-md-2"><input type="number" id="subtotal" placeholder="Subtotal" class="form-control" readonly></div>
+    </div>
+
+    <div class="mb-4">
+        <button onclick="guardar()" class="btn btn-success">Guardar</button>
+        <button onclick="actualizar()" class="btn btn-warning">Actualizar</button>
+        <button onclick="eliminar()" class="btn btn-danger">Eliminar</button>
+        <button onclick="cargar()" class="btn btn-secondary">Refrescar</button>
+        <a href="/menu" class="btn btn-dark">Regresar</a>
+    </div>
+
+    <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+        <tr><th>ID</th><th>Venta</th><th>Producto</th><th>Cant.</th><th>Precio U.</th><th>Subtotal</th></tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+    </table>
+</div>
+
+<script>
+    const API = "/detalleventas";
+
+    function calc() {
+        const c = document.getElementById("cantidad").value || 0;
+        const p = document.getElementById("precio").value || 0;
+        document.getElementById("subtotal").value = (c * p).toFixed(2);
+    }
+
+    function cargar() { fetch(API).then(r => r.json()).then(data => dibujar(data)); }
+
+    function buscarPorId() {
+        const id = document.getElementById("searchId").value;
+        fetch(`${API}/${id}`).then(r => r.ok ? r.json() : null).then(d => d ? dibujar([d]) : alert("No encontrado"));
+    }
+
+    function dibujar(data) {
+        let tabla = document.getElementById("tabla");
+        tabla.innerHTML = "";
+        data.forEach(d => {
+            tabla.innerHTML += `
+                <tr onclick="seleccionar(${d.codigoDetalleVenta},${d.venta.codigoVenta},${d.producto.codigoProducto},${d.cantidad},${d.precioUnitario},${d.subtotal})" style="cursor:pointer">
+                    <td>${d.codigoDetalleVenta}</td><td>${d.venta.codigoVenta}</td><td>${d.producto.codigoProducto}</td>
+                    <td>${d.cantidad}</td><td>Q${d.precioUnitario}</td><td>Q${d.subtotal}</td>
+                </tr>`;
+        });
+    }
+
+    function seleccionar(cod, v, p, c, pre, sub) {
+        document.getElementById("codigo").value = cod; document.getElementById("idVenta").value = v;
+        document.getElementById("idProd").value = p; document.getElementById("cantidad").value = c;
+        document.getElementById("precio").value = pre; document.getElementById("subtotal").value = sub;
+    }
+
+    function obtenerData() {
+        return {
+            codigoDetalleVenta: document.getElementById("codigo").value,
+            cantidad: document.getElementById("cantidad").value,
+            precioUnitario: document.getElementById("precio").value,
+            subtotal: document.getElementById("subtotal").value,
+            producto: { codigoProducto: document.getElementById("idProd").value },
+            venta: { codigoVenta: document.getElementById("idVenta").value }
+        };
+    }
+
+    function guardar() {
+        fetch(API, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(obtenerData()) }).then(() => cargar());
+    }
+
+    function actualizar() {
+        const id = document.getElementById("codigo").value;
+        fetch(`${API}/${id}`, { method: "PUT", headers: {"Content-Type":"application/json"}, body: JSON.stringify(obtenerData()) }).then(() => cargar());
+    }
+
+    function eliminar() {
+        const id = document.getElementById("codigo").value;
+        fetch(`${API}/${id}`, { method: "DELETE" }).then(() => cargar());
+    }
+
+    cargar();
+</script>
+</body>
+</html>
