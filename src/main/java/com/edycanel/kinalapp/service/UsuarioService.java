@@ -96,8 +96,7 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<Usuario> login(String username, String password){
+    public Optional<Usuario> login(String username, String password) {
         return usuarioRepository.findByUsernameAndPassword(username, password);
     }
 }
