@@ -13,14 +13,14 @@ public interface IVentaService {
 
     Venta guardar(Venta venta);
 
-    Optional<Venta> buscarPorCodigoVenta(int codigoVenta);
+    Optional<Venta> buscarPorCodigoVenta(Integer codigoVenta);
 
     @Transactional(readOnly = true)
-    List<Venta> buscarPorEstado(int estado);
+    List<Venta> buscarPorEstado(Integer estado);
 
-    Venta actualizar(int codigoVenta, Venta venta);
+    Venta actualizar(Integer codigoVenta, Venta venta);
 
-    void eliminar(int codigoVenta);
+    void eliminar(Integer codigoVenta);
 
-    boolean existePorCodigoVenta(int codigoVenta);
+    boolean existePorCodigoVenta(Integer codigoVenta);
 }

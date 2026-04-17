@@ -35,7 +35,7 @@ public class DetalleVentaService implements IDetalleVentaService {
     }
 
     @Override
-    public Optional<DetalleVenta> buscarPorCodigoDetalleVenta(int codigoDetalleVenta) {
+    public Optional<DetalleVenta> buscarPorCodigoDetalleVenta(Integer codigoDetalleVenta) {
         return detalleRepo.findById(codigoDetalleVenta);
     }
 
@@ -62,7 +62,7 @@ public class DetalleVentaService implements IDetalleVentaService {
     }
 
     @Override
-    public DetalleVenta actualizar(int codigoDetalleVenta, DetalleVenta detalle) {
+    public DetalleVenta actualizar(Integer codigoDetalleVenta, DetalleVenta detalle) {
 
         DetalleVenta existente = detalleRepo.findById(codigoDetalleVenta)
                 .orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
@@ -89,7 +89,7 @@ public class DetalleVentaService implements IDetalleVentaService {
     }
 
     @Override
-    public void eliminar(int codigoDetalleVenta) {
+    public void eliminar(Integer codigoDetalleVenta) {
         if (!detalleRepo.existsById(codigoDetalleVenta)) {
             throw new RuntimeException("Detalle no encontrado");
         }

@@ -24,7 +24,7 @@ public interface IClienteService {
     Optional<Cliente> buscarPorDPI(String dpi);
 
     @Transactional(readOnly = true)
-    List<Cliente> buscarPorEstado(int estado);
+    List<Cliente> buscarPorEstado(Integer estado);
 
     // Metodo que actualiza un Cliente
     Cliente actualizar(String dpi, Cliente cliente);

@@ -34,13 +34,13 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Usuario> buscarPorCodigoUsuario(int codigoUsuario) {
+    public Optional<Usuario> buscarPorCodigoUsuario(Integer codigoUsuario) {
         return usuarioRepository.findById(codigoUsuario);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Usuario> buscarPorEstado(int estado) {
+    public List<Usuario> buscarPorEstado(Integer estado) {
         return usuarioRepository.findAll()
                 .stream()
                 .filter(usuario -> usuario.getEstado() == estado)
@@ -48,7 +48,7 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public Usuario actualizar(int codigoUsuario, Usuario usuario) {
+    public Usuario actualizar(Integer codigoUsuario, Usuario usuario) {
         if (!usuarioRepository.existsById(codigoUsuario)){
             throw new RuntimeException("Usuario no se encontro con codigo " + codigoUsuario);
         }
@@ -60,7 +60,7 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public void eliminar(int codigoUsuario) {
+    public void eliminar(Integer codigoUsuario) {
         if(!usuarioRepository.existsById(codigoUsuario)){
             throw new RuntimeException("El usuario no se encontro con codigo " + codigoUsuario);
         }
@@ -69,7 +69,7 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existePorCodigoUsuario(int codigoUsuario) {
+    public boolean existePorCodigoUsuario(Integer codigoUsuario) {
         return usuarioRepository.existsById(codigoUsuario);
     }
 
