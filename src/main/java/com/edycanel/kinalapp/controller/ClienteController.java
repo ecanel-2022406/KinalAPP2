@@ -46,7 +46,7 @@ public class ClienteController {
     }
 
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<Cliente>> buscarPorEstado(@PathVariable int estado){
+    public ResponseEntity<List<Cliente>> buscarPorEstado(@PathVariable Integer estado){
         List<Cliente> clientes = clienteService.buscarPorEstado(estado);
         if(clientes.isEmpty()){
             return ResponseEntity.notFound().build();

@@ -34,19 +34,19 @@ public class VentaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Venta> buscar(@PathVariable int id) {
+    public ResponseEntity<Venta> buscar(@PathVariable Integer id) {
         return ventaService.buscarPorCodigoVenta(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable int id, @RequestBody Venta venta) {
+    public ResponseEntity<?> actualizar(@PathVariable Integer id, @RequestBody Venta venta) {
         return ResponseEntity.ok(ventaService.actualizar(id, venta));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable int id) {
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         ventaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }

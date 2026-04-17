@@ -25,14 +25,14 @@ public class UsuarioController {
     }
 
     @GetMapping("/{codigoUsuario}")
-    public ResponseEntity<Usuario> buscarPorCodigoUsuario(@PathVariable int codigoUsuario){
+    public ResponseEntity<Usuario> buscarPorCodigoUsuario(@PathVariable Integer codigoUsuario){
         return usuarioService.buscarPorCodigoUsuario(codigoUsuario)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<Usuario>> buscarPorEstado(@PathVariable int estado){
+    public ResponseEntity<List<Usuario>> buscarPorEstado(@PathVariable Integer estado){
         List<Usuario> usuarios = usuarioService.buscarPorEstado(estado);
         if(usuarios.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -51,7 +51,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{codigoUsuario}")
-    public ResponseEntity<Void> eliminar(@PathVariable int codigoUsuario){
+    public ResponseEntity<Void> eliminar(@PathVariable Integer codigoUsuario){
         try {
             if (!usuarioService.existePorCodigoUsuario(codigoUsuario)){
                 return ResponseEntity.notFound().build();
@@ -64,7 +64,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{codigoUsuario}")
-    public ResponseEntity<?> actualizar(@PathVariable int codigoUsuario, @RequestBody Usuario usuario){
+    public ResponseEntity<?> actualizar(@PathVariable Integer codigoUsuario, @RequestBody Usuario usuario){
         try{
             if(!usuarioService.existePorCodigoUsuario(codigoUsuario)){
                 return ResponseEntity.notFound().build();
