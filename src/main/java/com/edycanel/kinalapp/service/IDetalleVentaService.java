@@ -9,11 +9,11 @@ public interface IDetalleVentaService {
 
     List<DetalleVenta> listarTodos();
 
-    Optional<DetalleVenta> buscarPorCodigoDetalleVenta(int codigoDetalleVenta);
+    Optional<DetalleVenta> buscarPorCodigoDetalleVenta(Integer codigoDetalleVenta);
 
     DetalleVenta guardar(DetalleVenta detalleVenta);
 
-    DetalleVenta actualizar(int codigoDetalleVenta, DetalleVenta detalleVenta);
+    DetalleVenta actualizar(Integer codigoDetalleVenta, DetalleVenta detalleVenta);
 
-    void eliminar(int codigoDetalleVenta);
+    void eliminar(Integer codigoDetalleVenta);
 }

@@ -63,13 +63,13 @@ public class VentaService implements IVentaService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Venta> buscarPorCodigoVenta(int codigoVenta) {
+    public Optional<Venta> buscarPorCodigoVenta(Integer codigoVenta) {
         return ventaRepository.findById(codigoVenta);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Venta> buscarPorEstado(int estado) {
+    public List<Venta> buscarPorEstado(Integer estado) {
         return ventaRepository.findAll()
                 .stream()
                 .filter(v -> v.getEstado() == estado)
@@ -77,7 +77,7 @@ public class VentaService implements IVentaService {
     }
 
     @Override
-    public Venta actualizar(int codigoVenta, Venta venta) {
+    public Venta actualizar(Integer codigoVenta, Venta venta) {
         Venta existente = ventaRepository.findById(codigoVenta)
                 .orElseThrow(() -> new RuntimeException("Venta no existe"));
 
@@ -103,7 +103,7 @@ public class VentaService implements IVentaService {
     }
 
     @Override
-    public void eliminar(int codigoVenta) {
+    public void eliminar(Integer codigoVenta) {
         if (!ventaRepository.existsById(codigoVenta)) {
             throw new RuntimeException("Venta no encontrada");
         }
@@ -112,7 +112,7 @@ public class VentaService implements IVentaService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existePorCodigoVenta(int codigoVenta) {
+    public boolean existePorCodigoVenta(Integer codigoVenta) {
         return ventaRepository.existsById(codigoVenta);
     }
 

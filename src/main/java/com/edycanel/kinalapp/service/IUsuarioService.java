@@ -13,16 +13,16 @@ public interface IUsuarioService {
 
     Usuario guardar(Usuario usuario);
 
-    Optional<Usuario> buscarPorCodigoUsuario(int codigoUsuario);
+    Optional<Usuario> buscarPorCodigoUsuario(Integer codigoUsuario);
 
     @Transactional(readOnly = true)
-    List<Usuario> buscarPorEstado(int estado);
+    List<Usuario> buscarPorEstado(Integer estado);
 
-    Usuario actualizar(int codigoUsuario, Usuario usuario);
+    Usuario actualizar(Integer codigoUsuario, Usuario usuario);
 
-    void eliminar(int codigoUsuario);
+    void eliminar(Integer codigoUsuario);
 
-    boolean existePorCodigoUsuario(int codigoUsuario);
+    boolean existePorCodigoUsuario(Integer codigoUsuario);
 
     Optional<Usuario> login(String username, String password);
 }

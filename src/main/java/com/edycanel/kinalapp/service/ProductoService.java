@@ -34,13 +34,13 @@ public class ProductoService implements IProductoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Producto> buscarPorCodigoProducto(int codigoProducto) {
+    public Optional<Producto> buscarPorCodigoProducto(Integer codigoProducto) {
         return productoRepository.findById(codigoProducto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Producto> buscarPorEstado(int estado) {
+    public List<Producto> buscarPorEstado(Integer estado) {
         return productoRepository.findAll()
                 .stream()
                 .filter(producto -> producto.getEstado() == estado)
@@ -48,7 +48,7 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
-    public Producto actualizar(int codigoProducto, Producto producto) {
+    public Producto actualizar(Integer codigoProducto, Producto producto) {
         if (!productoRepository.existsById(codigoProducto)){
             throw new RuntimeException("Producto no se encontro con codigo " + codigoProducto);
         }
@@ -60,7 +60,7 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
-    public void eliminar(int codigoProducto) {
+    public void eliminar(Integer codigoProducto) {
         if(!productoRepository.existsById(codigoProducto)){
             throw new RuntimeException("El producto no se encontro con codigo " + codigoProducto);
         }
@@ -69,7 +69,7 @@ public class ProductoService implements IProductoService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existePorCodigoProducto(int codigoProducto) {
+    public boolean existePorCodigoProducto(Integer codigoProducto) {
         return productoRepository.existsById(codigoProducto);
     }
 

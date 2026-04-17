@@ -13,14 +13,14 @@ public interface IProductoService {
 
     Producto guardar(Producto producto);
 
-    Optional<Producto> buscarPorCodigoProducto(int codigoProducto);
+    Optional<Producto> buscarPorCodigoProducto(Integer codigoProducto);
 
     @Transactional(readOnly = true)
-    List<Producto> buscarPorEstado(int estado);
+    List<Producto> buscarPorEstado(Integer estado);
 
-    Producto actualizar(int codigoProducto, Producto producto);
+    Producto actualizar(Integer codigoProducto, Producto producto);
 
-    void eliminar(int codigoProducto);
+    void eliminar(Integer codigoProducto);
 
-    boolean existePorCodigoProducto(int codigoProducto);
+    boolean existePorCodigoProducto(Integer codigoProducto);
 }

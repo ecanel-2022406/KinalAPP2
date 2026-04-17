@@ -64,7 +64,7 @@ public class ClienteService implements IClienteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Cliente> buscarPorEstado(int estado) {
+    public List<Cliente> buscarPorEstado(Integer estado) {
         return clienteRepository.findAll()
                 .stream()
                 .filter(cliente -> cliente.getEstado() == estado)
