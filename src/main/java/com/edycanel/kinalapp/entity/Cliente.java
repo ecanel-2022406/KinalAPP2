@@ -27,6 +27,14 @@ public class Cliente {
     public Cliente() {
     }
 
+    public Cliente(String dpiCliente, String nombreCliente, String apellidoCliente, String direccion, Integer estado) {
+        this.dpiCliente = dpiCliente;
+        this.nombreCliente = nombreCliente;
+        this.apellidoCliente = apellidoCliente;
+        this.direccion = direccion;
+        this.estado = estado;
+    }
+
     public String getDpiCliente() {
         return dpiCliente;
     }
