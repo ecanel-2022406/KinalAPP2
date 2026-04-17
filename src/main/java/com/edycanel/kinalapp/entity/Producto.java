@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class Producto {
     @Id
     @Column(name = "codigo_producto")
-    private int codigoProducto;
+    private Integer codigoProducto;
 
     @Column
     private String nombreProducto;
@@ -21,10 +21,10 @@ public class Producto {
     private BigDecimal precio;
 
     @Column
-    private int stock;
+    private Integer stock;
 
     @Column
-    private int estado;
+    private Integer estado;
 
     public Producto() {
     }
