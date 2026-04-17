@@ -25,7 +25,7 @@ public class DetalleVentaController {
     }
 
     @GetMapping("/{codigoDetalleVenta}")
-    public ResponseEntity<DetalleVenta> buscarPorDetalleVenta(@PathVariable int codigoDetalleVenta){
+    public ResponseEntity<DetalleVenta> buscarPorDetalleVenta(@PathVariable Integer codigoDetalleVenta){
         return detalleVentaService.buscarPorCodigoDetalleVenta(codigoDetalleVenta)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -44,7 +44,7 @@ public class DetalleVentaController {
     }
 
     @PutMapping("/{codigoDetalleVenta}")
-    public ResponseEntity<?> actualizar(@PathVariable int codigoDetalleVenta,
+    public ResponseEntity<?> actualizar(@PathVariable Integer codigoDetalleVenta,
                                         @RequestBody DetalleVenta detalleVenta){
         try{
             DetalleVenta actualizado = detalleVentaService.actualizar(codigoDetalleVenta, detalleVenta);
@@ -57,7 +57,7 @@ public class DetalleVentaController {
     }
 
     @DeleteMapping("/{codigoDetalleVenta}")
-    public ResponseEntity<Void> eliminar(@PathVariable int codigoDetalleVenta){
+    public ResponseEntity<Void> eliminar(@PathVariable Integer codigoDetalleVenta){
         try{
             detalleVentaService.eliminar(codigoDetalleVenta);
             return ResponseEntity.noContent().build();

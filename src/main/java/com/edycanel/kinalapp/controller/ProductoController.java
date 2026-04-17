@@ -25,14 +25,14 @@ public class ProductoController {
     }
 
     @GetMapping("/{codigoProducto}")
-    public ResponseEntity<Producto> buscarPorCodigoProducto(@PathVariable int codigoProducto){
+    public ResponseEntity<Producto> buscarPorCodigoProducto(@PathVariable Integer codigoProducto){
         return productoService.buscarPorCodigoProducto(codigoProducto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<Producto>> buscarPorEstado(@PathVariable int estado){
+    public ResponseEntity<List<Producto>> buscarPorEstado(@PathVariable Integer estado){
         List<Producto> productos = productoService.buscarPorEstado(estado);
         if(productos.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -51,7 +51,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/{codigoProducto}")
-    public ResponseEntity<Void> eliminar(@PathVariable int codigoProducto){
+    public ResponseEntity<Void> eliminar(@PathVariable Integer codigoProducto){
         try {
             if (!productoService.existePorCodigoProducto(codigoProducto)){
                 return ResponseEntity.notFound().build();
@@ -64,7 +64,7 @@ public class ProductoController {
     }
 
     @PutMapping("/{codigoProducto}")
-    public ResponseEntity<?> actualizar(@PathVariable int codigoProducto, @RequestBody Producto producto){
+    public ResponseEntity<?> actualizar(@PathVariable Integer codigoProducto, @RequestBody Producto producto){
         try{
             if(!productoService.existePorCodigoProducto(codigoProducto)){
                 return ResponseEntity.notFound().build();
