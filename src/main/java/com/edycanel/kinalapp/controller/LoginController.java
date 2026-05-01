@@ -17,29 +17,11 @@ public class LoginController {
         this.usuarioService = usuarioService;
     }
 
-    // Mostrar login
     @GetMapping("/")
     public String mostrarLogin() {
         return "login";
     }
 
-    // Procesar login
-    @PostMapping("/login")
-    public String login(@RequestParam String username,
-                        @RequestParam String password,
-                        Model model) {
-
-        Optional<Usuario> usuario = usuarioService.login(username, password);
-
-        if (usuario.isPresent()) {
-            return "menu"; // Redirige al menú
-        } else {
-            model.addAttribute("error", "Usuario o contraseña incorrectos");
-            return "login";
-        }
-    }
-
-    // Mostrar menú
     @GetMapping("/menu")
     public String mostrarMenu() {
         return "menu";
