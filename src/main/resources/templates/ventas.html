@@ -1,185 +1,209 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>KinalApp | Gestión de Ventas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Ventas</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="p-4 bg-light">
-<div class="container bg-white p-4 shadow-sm rounded">
-    <h2 class="mb-4 text-primary">Gestión de Ventas</h2>
+<body>
 
-    <div class="row g-2 mb-4 p-3 border rounded bg-light">
-        <div class="col-md-4">
-            <input type="number" id="searchId" class="form-control" placeholder="ID de venta a buscar...">
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-primary w-100" onclick="buscarPorId()">Buscar ID</button>
-        </div>
-        <div class="col-md-3">
-            <select id="searchEstado" class="form-select">
-                <option value="">Filtrar por Estado...</option>
-                <option value="1">1 - Activa</option>
-                <option value="0">0 - Inactiva</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <button class="btn btn-info w-100 text-white" onclick="buscarPorEstado()">Filtrar Estado</button>
-        </div>
-    </div>
+<div class="contenedor">
 
-    <div class="row g-2 mb-3">
-        <div class="col-md-2">
-            <label class="small text-muted">ID Venta</label>
-            <input type="number" id="codigoVenta" class="form-control" placeholder="Automático" readonly>
-        </div>
-        <div class="col-md-3">
-            <label class="small text-muted">Fecha</label>
-            <input type="date" id="fecha" class="form-control">
-        </div>
-        <div class="col-md-3">
-            <label class="small text-muted">DPI Cliente</label>
-            <input type="text" id="clienteDpi" class="form-control" placeholder="DPI del cliente">
-        </div>
-        <div class="col-md-2">
-            <label class="small text-muted">ID Usuario</label>
-            <input type="number" id="usuarioId" class="form-control" placeholder="ID usuario">
-        </div>
-        <div class="col-md-2">
-            <label class="small text-muted">Estado</label>
-            <select id="estado" class="form-select">
-                <option value="1">1 - Activa</option>
-                <option value="0">0 - Inactiva</option>
-            </select>
-        </div>
-    </div>
+    <h2>Ventas</h2>
 
-    <div class="mb-4">
-        <button onclick="guardar()" class="btn btn-success">Guardar</button>
-        <button onclick="actualizar()" class="btn btn-warning">Actualizar</button>
-        <button onclick="eliminar()" class="btn btn-danger">Eliminar</button>
-        <button onclick="cargar()" class="btn btn-secondary">Limpiar/Ver Todos</button>
-        <a href="/menu" class="btn btn-dark">Regresar al Menú</a>
-    </div>
+    <input type="number" id="buscarId" placeholder="Buscar ID">
 
-    <table class="table table-hover table-bordered">
-        <thead class="table-dark">
+    <button onclick="buscarPorId()">Buscar</button>
+
+    <select id="buscarEstado">
+        <option value="">Estado</option>
+        <option value="1">Activa</option>
+        <option value="0">Inactiva</option>
+    </select>
+
+    <button onclick="buscarPorEstado()">Buscar Estado</button>
+
+    <hr>
+
+    <input type="number" id="codigoVenta" placeholder="ID Venta">
+
+    <input type="date" id="fecha">
+
+    <input type="text" id="clienteDpi" placeholder="DPI Cliente">
+
+    <input type="number" id="usuarioId" placeholder="ID Usuario">
+
+    <select id="estado">
+        <option value="1">Activa</option>
+        <option value="0">Inactiva</option>
+    </select>
+
+    <br>
+
+    <button onclick="guardar()">Guardar</button>
+
+    <button onclick="actualizar()">Actualizar</button>
+
+    <button onclick="eliminar()">Eliminar</button>
+
+    <button onclick="cargar()">Refrescar</button>
+
+    <a href="/menu">Regresar</a>
+
+    <table>
+
+        <thead>
         <tr>
-            <th>ID Venta</th>
+            <th>ID</th>
             <th>Fecha</th>
             <th>DPI Cliente</th>
             <th>ID Usuario</th>
             <th>Estado</th>
         </tr>
         </thead>
+
         <tbody id="tabla"></tbody>
+
     </table>
+
 </div>
 
 <script>
+
     const API = "/ventas";
 
-    function cargar() {
-        limpiarFormulario();
+    function cargar(){
+
         fetch(API)
             .then(r => r.json())
-            .then(data => dibujarTabla(data))
-            .catch(err => console.error("Error al cargar:", err));
+            .then(data => dibujar(data));
     }
 
-    function buscarPorId() {
-        const id = document.getElementById("searchId").value;
-        if (!id) return alert("Ingrese un ID de venta");
-        fetch(`${API}/${id}`)
-            .then(r => r.ok ? r.json() : null)
-            .then(data => data ? dibujarTabla([data]) : alert("Venta no encontrada"));
-    }
+    function dibujar(data){
 
-    function buscarPorEstado() {
-        const est = document.getElementById("searchEstado").value;
-        if (est === "") return alert("Seleccione un estado");
-        fetch(`${API}/estado/${est}`)
-            .then(r => r.json())
-            .then(data => dibujarTabla(data));
-    }
-
-    function dibujarTabla(data) {
         let tabla = document.getElementById("tabla");
+
         tabla.innerHTML = "";
+
         data.forEach(v => {
 
-            const dpi = v.cliente ? v.cliente.dpiCliente : "N/A";
-            const user = v.usuario ? v.usuario.codigoUsuario : "N/A";
+            let dpi = v.cliente ? v.cliente.dpiCliente : "";
+
+            let user = v.usuario ? v.usuario.codigoUsuario : "";
 
             tabla.innerHTML += `
-                <tr onclick="seleccionar('${v.codigoVenta}','${v.fechaVenta}','${dpi}','${user}',${v.estado})" style="cursor:pointer">
+                <tr onclick="seleccionar('${v.codigoVenta}','${v.fechaVenta}','${dpi}','${user}','${v.estado}')">
+
                     <td>${v.codigoVenta}</td>
+
                     <td>${v.fechaVenta}</td>
+
                     <td>${dpi}</td>
+
                     <td>${user}</td>
-                    <td><span class="badge ${v.estado == 1 ? 'bg-success' : 'bg-danger'}">${v.estado}</span></td>
-                </tr>`;
+
+                    <td>${v.estado}</td>
+
+                </tr>
+            `;
         });
     }
 
-    function seleccionar(id, fecha, dpi, user, est) {
+    function seleccionar(id,fecha,dpi,user,estado){
+
         document.getElementById("codigoVenta").value = id;
+
         document.getElementById("fecha").value = fecha;
+
         document.getElementById("clienteDpi").value = dpi;
+
         document.getElementById("usuarioId").value = user;
-        document.getElementById("estado").value = est;
+
+        document.getElementById("estado").value = estado;
     }
 
-    function obtenerJson() {
-        return {
-            codigoVenta: document.getElementById("codigoVenta").value || null,
+    function obtener(){
+
+        return{
+
+            codigoVenta: document.getElementById("codigoVenta").value,
+
             fechaVenta: document.getElementById("fecha").value,
-            estado: parseInt(document.getElementById("estado").value),
-            cliente: {
+
+            estado: document.getElementById("estado").value,
+
+            cliente:{
                 dpiCliente: document.getElementById("clienteDpi").value
             },
-            usuario: {
-                codigoUsuario: parseInt(document.getElementById("usuarioId").value)
+
+            usuario:{
+                codigoUsuario: document.getElementById("usuarioId").value
             }
         };
     }
 
-    function guardar() {
-        fetch(API, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(obtenerJson())
-        }).then(r => r.ok ? cargar() : alert("Error al guardar. Verifique DPI e ID Usuario."));
+    function guardar(){
+
+        fetch(API,{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
     }
 
-    function actualizar() {
+    function actualizar(){
+
         const id = document.getElementById("codigoVenta").value;
-        if(!id) return alert("Seleccione una venta de la tabla para actualizar");
 
-        fetch(`${API}/${id}`, {
-            method: "PUT",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(obtenerJson())
-        }).then(r => r.ok ? cargar() : alert("Error al actualizar"));
+        fetch(`${API}/${id}`,{
+
+            method:"PUT",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
     }
 
-    function eliminar() {
+    function eliminar(){
+
         const id = document.getElementById("codigoVenta").value;
-        if (!id) return alert("Seleccione una venta para eliminar");
-        if (confirm("¿Desea eliminar esta venta?")) {
-            fetch(`${API}/${id}`, { method: "DELETE" }).then(() => cargar());
-        }
+
+        fetch(`${API}/${id}`,{
+            method:"DELETE"
+        }).then(() => cargar());
     }
 
-    function limpiarFormulario() {
-        document.getElementById("codigoVenta").value = "";
-        document.getElementById("fecha").value = "";
-        document.getElementById("clienteDpi").value = "";
-        document.getElementById("usuarioId").value = "";
-        document.getElementById("estado").value = "1";
+    function buscarPorId(){
+
+        const id = document.getElementById("buscarId").value;
+
+        fetch(`${API}/${id}`)
+            .then(r => r.json())
+            .then(data => dibujar([data]));
+    }
+
+    function buscarPorEstado(){
+
+        const estado = document.getElementById("buscarEstado").value;
+
+        fetch(`${API}/estado/${estado}`)
+            .then(r => r.json())
+            .then(data => dibujar(data));
     }
 
     cargar();
+
 </script>
+
 </body>
 </html>
