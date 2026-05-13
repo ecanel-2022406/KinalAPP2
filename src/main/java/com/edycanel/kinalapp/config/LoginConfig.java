@@ -18,6 +18,7 @@ public class LoginConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/menu").authenticated()
@@ -30,8 +31,8 @@ public class LoginConfig {
                 )
 
                 .formLogin(form -> form
-                        .loginPage("/") // tu HTML login
-                        .loginProcessingUrl("/login") // Spring maneja el POST
+                        .loginPage("/")
+                        .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/menu", true)
                         .failureUrl("/?error=true")
                         .permitAll()

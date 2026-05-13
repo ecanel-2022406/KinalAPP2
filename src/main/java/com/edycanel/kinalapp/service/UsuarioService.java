@@ -99,4 +99,10 @@ public class UsuarioService implements IUsuarioService {
     public Optional<Usuario> login(String username, String password) {
         return usuarioRepository.findByUsernameAndPassword(username, password);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Usuario> buscarPorUsername(String username) {
+        return usuarioRepository.findByUsername(username);
+    }
 }
