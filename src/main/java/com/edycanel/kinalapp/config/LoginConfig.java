@@ -45,6 +45,7 @@ public class LoginConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/**/*.css", "/**/*.js").permitAll()
                         .requestMatchers("/", "/login", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/menu").authenticated()
                         .requestMatchers("/clientes-vista").hasRole("ADMIN")
