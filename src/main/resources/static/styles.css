@@ -1,63 +1,39 @@
-body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(-45deg, #1e3c72, #2a5298, #0f2027, #203a43);
-    background-size: 400% 400%;
-    animation: gradientBG 10s ease infinite;
-    font-family: 'Segoe UI', sans-serif;
+body{
+    font-family: Arial;
+    background-color: #f0f0f0;
+    padding: 20px;
 }
 
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.contenedor{
+    background: white;
+    padding: 20px;
 }
 
-.login-container {
-    height: 100vh;
+input, select{
+    padding: 8px;
+    margin: 5px;
 }
 
-.login-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(15px);
-    border-radius: 20px;
-    padding: 40px;
-    width: 350px;
+button, a{
+    padding: 8px 10px;
+    margin: 5px;
+    text-decoration: none;
+    border: none;
+    background: blue;
     color: white;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    cursor: pointer;
 }
 
-.form-control {
-    border-radius: 10px;
-    border: none;
-    padding: 12px;
+table{
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
 }
 
-.form-control:focus {
-    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+table, th, td{
+    border: 1px solid gray;
 }
 
-.btn-login {
-    background: #00c6ff;
-    background: linear-gradient(to right, #0072ff, #00c6ff);
-    border: none;
-    border-radius: 10px;
+th, td{
     padding: 10px;
-    color: white;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-.btn-login:hover {
-    transform: scale(1.05);
-}
-
-.input-group-text {
-    border-radius: 10px 0 0 10px;
-}
-
-.alert {
-    background: rgba(255,0,0,0.2);
-    border: none;
-    color: white;
 }
