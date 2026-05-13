@@ -1,18 +1,43 @@
 package com.edycanel.kinalapp.config;
 
+import com.edycanel.kinalapp.entity.Usuario;
+import com.edycanel.kinalapp.service.IUsuarioService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.List;
 
 @Configuration
 public class LoginConfig {
+
+    private final IUsuarioService usuarioService;
+
+    public LoginConfig(IUsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+
+        return username -> {
+
+            Usuario usuario = usuarioService.buscarPorUsername(username)
+                    .orElseThrow(() ->
+                            new UsernameNotFoundException("Usuario no encontrado"));
+
+            return new User(
+                    usuario.getUsername(),
+                    usuario.getPassword(),
+                    List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()))
+            );
+        };
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,24 +69,6 @@ public class LoginConfig {
                 );
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-
-        UserDetails user = User.builder()
-                .username("user")
-                .password("1234")
-                .roles("USER")
-                .build();
-
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password("admin")
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(user, admin);
     }
 
     @Bean
