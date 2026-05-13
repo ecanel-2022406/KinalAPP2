@@ -1,116 +1,208 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>KinalApp | Usuarios</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Usuarios</title>
+
+    <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
-<body class="p-4 bg-light">
-<div class="container bg-white p-4 shadow-sm rounded">
-    <h2 class="mb-4 text-primary">Mantenimiento de Usuarios</h2>
+<body>
 
-    <div class="row g-2 mb-4 p-3 border rounded bg-light">
-        <div class="col-md-4"><input type="number" id="searchId" class="form-control" placeholder="ID de usuario..."></div>
-        <div class="col-md-2"><button class="btn btn-primary w-100" onclick="buscarPorId()">Buscar ID</button></div>
-        <div class="col-md-3">
-            <select id="searchEstado" class="form-select">
-                <option value="">Estado...</option>
-                <option value="1">1 - Activo</option>
-                <option value="0">0 - Inactivo</option>
-            </select>
-        </div>
-        <div class="col-md-3"><button class="btn btn-info w-100 text-white" onclick="buscarPorEstado()">Filtrar</button></div>
-    </div>
+<div class="contenedor">
 
-    <div class="row g-2 mb-3">
-        <div class="col-md-2"><input type="number" id="codigo" placeholder="ID" class="form-control"></div>
-        <div class="col-md-3"><input type="text" id="user" placeholder="Username" class="form-control"></div>
-        <div class="col-md-3"><input type="password" id="pass" placeholder="Password" class="form-control"></div>
-        <div class="col-md-2"><input type="text" id="rol" placeholder="Rol" class="form-control"></div>
-        <div class="col-md-2">
-            <select id="estado" class="form-select">
-                <option value="1">1 - Activo</option>
-                <option value="0">0 - Inactivo</option>
-            </select>
-        </div>
-        <div class="col-md-12 mt-2"><input type="email" id="email" placeholder="Correo Electrónico" class="form-control"></div>
-    </div>
+    <h2>Usuarios</h2>
 
-    <div class="mb-4">
-        <button onclick="guardar()" class="btn btn-success">Guardar</button>
-        <button onclick="actualizar()" class="btn btn-warning">Actualizar</button>
-        <button onclick="eliminar()" class="btn btn-danger">Eliminar</button>
-        <button onclick="cargar()" class="btn btn-secondary">Refrescar</button>
-        <a href="/menu" class="btn btn-dark">Regresar</a>
-    </div>
+    <input type="number" id="buscarId" placeholder="Buscar ID">
 
-    <table class="table table-hover table-bordered">
-        <thead class="table-dark">
-        <tr><th>ID</th><th>Username</th><th>Email</th><th>Rol</th><th>Estado</th></tr>
+    <button onclick="buscarPorId()">Buscar</button>
+
+    <select id="buscarEstado">
+        <option value="">Estado</option>
+        <option value="1">Activo</option>
+        <option value="0">Inactivo</option>
+    </select>
+
+    <button onclick="buscarPorEstado()">Buscar Estado</button>
+
+    <hr>
+
+    <input type="number" id="codigo" placeholder="ID">
+
+    <input type="text" id="user" placeholder="Usuario">
+
+    <input type="password" id="pass" placeholder="Contraseña">
+
+    <input type="email" id="email" placeholder="Correo">
+
+    <input type="text" id="rol" placeholder="Rol">
+
+    <select id="estado">
+        <option value="1">Activo</option>
+        <option value="0">Inactivo</option>
+    </select>
+
+    <br>
+
+    <button onclick="guardar()">Guardar</button>
+
+    <button onclick="actualizar()">Actualizar</button>
+
+    <button onclick="eliminar()">Eliminar</button>
+
+    <button onclick="cargar()">Refrescar</button>
+
+    <a href="/menu">Regresar</a>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+        </tr>
         </thead>
+
         <tbody id="tabla"></tbody>
+
     </table>
+
 </div>
 
 <script>
+
     const API = "/usuarios";
 
-    function cargar() { fetch(API).then(r => r.json()).then(data => dibujar(data)); }
+    function cargar(){
 
-    function buscarPorId() {
-        const id = document.getElementById("searchId").value;
-        fetch(`${API}/${id}`).then(r => r.ok ? r.json() : null).then(d => d ? dibujar([d]) : alert("No encontrado"));
+        fetch(API)
+            .then(r => r.json())
+            .then(data => dibujar(data));
     }
 
-    function buscarPorEstado() {
-        const est = document.getElementById("searchEstado").value;
-        fetch(`${API}/estado/${est}`).then(r => r.json()).then(data => dibujar(data));
-    }
+    function dibujar(data){
 
-    function dibujar(data) {
         let tabla = document.getElementById("tabla");
+
         tabla.innerHTML = "";
+
         data.forEach(u => {
+
             tabla.innerHTML += `
-                <tr onclick="seleccionar(${u.codigoUsuario},'${u.username}','${u.password}','${u.email}','${u.rol}',${u.estado})" style="cursor:pointer">
-                    <td>${u.codigoUsuario}</td><td>${u.username}</td><td>${u.email}</td><td>${u.rol}</td>
-                    <td><span class="badge ${u.estado==1?'bg-success':'bg-danger'}">${u.estado}</span></td>
-                </tr>`;
+            <tr onclick="seleccionar(${u.codigoUsuario},'${u.username}','${u.password}','${u.email}','${u.rol}','${u.estado}')">
+
+                <td>${u.codigoUsuario}</td>
+
+                <td>${u.username}</td>
+
+                <td>${u.email}</td>
+
+                <td>${u.rol}</td>
+
+                <td>${u.estado}</td>
+
+            </tr>
+        `;
         });
     }
 
-    function seleccionar(c, u, p, em, r, e) {
-        document.getElementById("codigo").value = c; document.getElementById("user").value = u;
-        document.getElementById("pass").value = p; document.getElementById("email").value = em;
-        document.getElementById("rol").value = r; document.getElementById("estado").value = e;
+    function seleccionar(c,u,p,e,r,es){
+
+        document.getElementById("codigo").value = c;
+
+        document.getElementById("user").value = u;
+
+        document.getElementById("pass").value = p;
+
+        document.getElementById("email").value = e;
+
+        document.getElementById("rol").value = r;
+
+        document.getElementById("estado").value = es;
     }
 
-    function obtenerData() {
-        return {
+    function obtener(){
+
+        return{
+
             codigoUsuario: document.getElementById("codigo").value,
+
             username: document.getElementById("user").value,
+
             password: document.getElementById("pass").value,
+
             email: document.getElementById("email").value,
+
             rol: document.getElementById("rol").value,
+
             estado: document.getElementById("estado").value
         };
     }
 
-    function guardar() {
-        fetch(API, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(obtenerData()) }).then(() => cargar());
+    function guardar(){
+
+        fetch(API,{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
     }
 
-    function actualizar() {
+    function actualizar(){
+
         const id = document.getElementById("codigo").value;
-        fetch(`${API}/${id}`, { method: "PUT", headers: {"Content-Type":"application/json"}, body: JSON.stringify(obtenerData()) }).then(() => cargar());
+
+        fetch(`${API}/${id}`,{
+
+            method:"PUT",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
     }
 
-    function eliminar() {
+    function eliminar(){
+
         const id = document.getElementById("codigo").value;
-        fetch(`${API}/${id}`, { method: "DELETE" }).then(() => cargar());
+
+        fetch(`${API}/${id}`,{
+            method:"DELETE"
+        }).then(() => cargar());
+    }
+
+    function buscarPorId(){
+
+        const id = document.getElementById("buscarId").value;
+
+        fetch(`${API}/${id}`)
+            .then(r => r.json())
+            .then(data => dibujar([data]));
+    }
+
+    function buscarPorEstado(){
+
+        const estado = document.getElementById("buscarEstado").value;
+
+        fetch(`${API}/estado/${estado}`)
+            .then(r => r.json())
+            .then(data => dibujar(data));
     }
 
     cargar();
+
 </script>
+
 </body>
 </html>
