@@ -1,163 +1,192 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>KinalApp | Detalle de Ventas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Detalle Ventas</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="p-4 bg-light">
-<div class="container bg-white p-4 shadow-sm rounded">
-    <h2 class="mb-4 text-primary">Gestión de Detalle de Ventas</h2>
+<body>
 
-    <div class="row g-2 mb-3">
-        <div class="col-md-2">
-            <label class="form-label small text-muted">ID Detalle</label>
-            <input type="number" id="codigo" class="form-control" placeholder="Auto" readonly>
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small text-muted">ID Venta</label>
-            <input type="number" id="idVenta" class="form-control">
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small text-muted">ID Producto</label>
-            <input type="number" id="idProd" class="form-control">
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small text-muted">Cantidad</label>
-            <input type="number" id="cantidad" class="form-control" oninput="calcular()">
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small text-muted">Precio Unit.</label>
-            <input type="number" step="0.01" id="precio" class="form-control" oninput="calcular()">
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small text-muted">Subtotal</label>
-            <input type="number" id="subtotal" class="form-control" readonly style="background-color: #eee;">
-        </div>
-    </div>
+<div class="contenedor">
 
-    <div class="mb-4">
-        <button onclick="guardar()" class="btn btn-success">Guardar</button>
-        <button onclick="actualizar()" class="btn btn-warning">Actualizar</button>
-        <button onclick="eliminar()" class="btn btn-danger">Eliminar</button>
-        <button onclick="cargar()" class="btn btn-secondary">Refrescar</button>
-        <a href="/menu" class="btn btn-dark">Regresar</a>
-    </div>
+    <h2>Detalle Ventas</h2>
 
-    <!-- TABLA -->
-    <table class="table table-hover table-bordered">
-        <thead class="table-dark">
+    <input type="number" id="codigo" placeholder="ID">
+
+    <input type="number" id="idVenta" placeholder="ID Venta">
+
+    <input type="number" id="idProducto" placeholder="ID Producto">
+
+    <input type="number" id="cantidad" placeholder="Cantidad" oninput="calcular()">
+
+    <input type="number" id="precio" placeholder="Precio" oninput="calcular()">
+
+    <input type="number" id="subtotal" placeholder="Subtotal" readonly>
+
+    <br>
+
+    <button onclick="guardar()">Guardar</button>
+
+    <button onclick="actualizar()">Actualizar</button>
+
+    <button onclick="eliminar()">Eliminar</button>
+
+    <button onclick="cargar()">Refrescar</button>
+
+    <a href="/menu">Regresar</a>
+
+    <table>
+
+        <thead>
         <tr>
             <th>ID</th>
             <th>Venta</th>
             <th>Producto</th>
-            <th>Cant.</th>
+            <th>Cantidad</th>
             <th>Precio</th>
             <th>Subtotal</th>
         </tr>
         </thead>
+
         <tbody id="tabla"></tbody>
+
     </table>
+
 </div>
 
 <script>
+
     const API = "/detalleventas";
 
-    function calcular() {
-        const c = parseFloat(document.getElementById("cantidad").value || 0);
-        const p = parseFloat(document.getElementById("precio").value || 0);
-        document.getElementById("subtotal").value = (c * p).toFixed(2);
+    function calcular(){
+
+        const cantidad = parseFloat(document.getElementById("cantidad").value || 0);
+
+        const precio = parseFloat(document.getElementById("precio").value || 0);
+
+        document.getElementById("subtotal").value = cantidad * precio;
     }
 
-    function cargar() {
-        fetch(API).then(r => r.json()).then(data => dibujarTabla(data));
+    function cargar(){
+
+        fetch(API)
+            .then(r => r.json())
+            .then(data => dibujar(data));
     }
 
-    function dibujarTabla(data) {
+    function dibujar(data){
+
         let tabla = document.getElementById("tabla");
+
         tabla.innerHTML = "";
+
         data.forEach(d => {
-            const vId = d.venta ? d.venta.codigoVenta : '';
-            const pId = d.producto ? d.producto.codigoProducto : '';
+
+            let venta = d.venta ? d.venta.codigoVenta : "";
+
+            let producto = d.producto ? d.producto.codigoProducto : "";
+
             tabla.innerHTML += `
-                <tr onclick="seleccionar(${d.codigoDetalleVenta}, ${vId}, ${pId}, ${d.cantidad}, ${d.precioUnitario}, ${d.subtotal})" style="cursor:pointer">
+                <tr onclick="seleccionar('${d.codigoDetalleVenta}','${venta}','${producto}','${d.cantidad}','${d.precioUnitario}','${d.subtotal}')">
+
                     <td>${d.codigoDetalleVenta}</td>
-                    <td>${vId}</td>
-                    <td>${pId}</td>
+
+                    <td>${venta}</td>
+
+                    <td>${producto}</td>
+
                     <td>${d.cantidad}</td>
+
                     <td>${d.precioUnitario}</td>
+
                     <td>${d.subtotal}</td>
-                </tr>`;
+
+                </tr>
+            `;
         });
     }
 
-    function seleccionar(id, vId, pId, cant, precio, sub) {
+    function seleccionar(id,venta,producto,cantidad,precio,subtotal){
+
         document.getElementById("codigo").value = id;
-        document.getElementById("idVenta").value = vId;
-        document.getElementById("idProd").value = pId;
-        document.getElementById("cantidad").value = cant;
+
+        document.getElementById("idVenta").value = venta;
+
+        document.getElementById("idProducto").value = producto;
+
+        document.getElementById("cantidad").value = cantidad;
+
         document.getElementById("precio").value = precio;
-        document.getElementById("subtotal").value = sub;
+
+        document.getElementById("subtotal").value = subtotal;
     }
 
-    function obtenerJson() {
-        const id = document.getElementById("codigo").value;
-        const vId = document.getElementById("idVenta").value;
-        const pId = document.getElementById("idProd").value;
+    function obtener(){
 
-        return {
-            codigoDetalleVenta: id ? parseInt(id) : null,
-            cantidad: parseInt(document.getElementById("cantidad").value || 0),
-            precioUnitario: parseFloat(document.getElementById("precio").value || 0),
-            subtotal: parseFloat(document.getElementById("subtotal").value || 0),
-            venta: { codigoVenta: parseInt(vId) },
-            producto: { codigoProducto: parseInt(pId) }
+        return{
+
+            codigoDetalleVenta: document.getElementById("codigo").value,
+
+            cantidad: document.getElementById("cantidad").value,
+
+            precioUnitario: document.getElementById("precio").value,
+
+            subtotal: document.getElementById("subtotal").value,
+
+            venta:{
+                codigoVenta: document.getElementById("idVenta").value
+            },
+
+            producto:{
+                codigoProducto: document.getElementById("idProducto").value
+            }
         };
     }
 
-    function guardar() {
-        const data = obtenerJson();
-        fetch(API, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        })
-            .then(r => r.json().then(res => {
-                if (r.ok) {
-                    alert("Guardado");
-                    cargar();
-                } else {
-                    // Esto te mostrará el mensaje exacto del servidor (Spring)
-                    console.error("Detalle del error:", res);
-                    alert("Error del servidor: " + (res.message || "Revisa la consola F12"));
-                }
-            }))
-            .catch(err => alert("Error de conexión"));
+    function guardar(){
+
+        fetch(API,{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
     }
 
-    function actualizar() {
+    function actualizar(){
+
         const id = document.getElementById("codigo").value;
-        if(!id) return alert("Seleccione un registro");
 
-        fetch(`${API}/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(obtenerJson())
-        }).then(r => r.ok ? cargar() : alert("Error al actualizar"));
+        fetch(`${API}/${id}`,{
+
+            method:"PUT",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
     }
 
-    function eliminar() {
+    function eliminar(){
+
         const id = document.getElementById("codigo").value;
-        if (id && confirm("¿Eliminar registro?")) {
-            fetch(`${API}/${id}`, { method: "DELETE" }).then(() => cargar());
-        }
-    }
 
-    function limpiar() {
-        document.querySelectorAll('input').forEach(i => i.value = "");
+        fetch(`${API}/${id}`,{
+            method:"DELETE"
+        }).then(() => cargar());
     }
 
     cargar();
+
 </script>
+
 </body>
 </html>
