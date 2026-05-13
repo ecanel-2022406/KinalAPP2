@@ -1,64 +1,57 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>KinalApp | Detalle de Ventas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body class="p-4 bg-light">
+<div class="container bg-white p-4 shadow-sm rounded">
+    <h2 class="mb-4 text-primary">Gestión de Detalle de Ventas</h2>
 
-<div class="container bg-white p-4 shadow rounded">
-    <h2 class="text-primary mb-4">Detalle de Venta</h2>
-
-    <!-- FORMULARIO -->
-    <div class="row g-3 mb-4">
+    <div class="row g-2 mb-3">
         <div class="col-md-2">
-            <label class="form-label">ID Detalle</label>
-            <input type="number" id="codigo" class="form-control" disabled>
+            <label class="form-label small text-muted">ID Detalle</label>
+            <input type="number" id="codigo" class="form-control" placeholder="Auto" readonly>
         </div>
-
         <div class="col-md-2">
-            <label class="form-label">ID Venta</label>
+            <label class="form-label small text-muted">ID Venta</label>
             <input type="number" id="idVenta" class="form-control">
         </div>
-
         <div class="col-md-2">
-            <label class="form-label">ID Producto</label>
+            <label class="form-label small text-muted">ID Producto</label>
             <input type="number" id="idProd" class="form-control">
         </div>
-
         <div class="col-md-2">
-            <label class="form-label">Cantidad</label>
+            <label class="form-label small text-muted">Cantidad</label>
             <input type="number" id="cantidad" class="form-control" oninput="calcular()">
         </div>
-
         <div class="col-md-2">
-            <label class="form-label">Precio Unitario</label>
+            <label class="form-label small text-muted">Precio Unit.</label>
             <input type="number" step="0.01" id="precio" class="form-control" oninput="calcular()">
         </div>
-
         <div class="col-md-2">
-            <label class="form-label">Subtotal</label>
-            <input type="number" id="subtotal" class="form-control" readonly>
+            <label class="form-label small text-muted">Subtotal</label>
+            <input type="number" id="subtotal" class="form-control" readonly style="background-color: #eee;">
         </div>
     </div>
 
-    <!-- BOTONES -->
     <div class="mb-4">
-        <button class="btn btn-success me-2" onclick="guardar()">Guardar</button>
-        <button class="btn btn-secondary" onclick="cargar()">Refrescar</button>
+        <button onclick="guardar()" class="btn btn-success">Guardar</button>
+        <button onclick="actualizar()" class="btn btn-warning">Actualizar</button>
+        <button onclick="eliminar()" class="btn btn-danger">Eliminar</button>
+        <button onclick="cargar()" class="btn btn-secondary">Refrescar</button>
         <a href="/menu" class="btn btn-dark">Regresar</a>
     </div>
 
     <!-- TABLA -->
-    <table class="table table-bordered table-hover">
+    <table class="table table-hover table-bordered">
         <thead class="table-dark">
         <tr>
             <th>ID</th>
             <th>Venta</th>
             <th>Producto</th>
-            <th>Cantidad</th>
+            <th>Cant.</th>
             <th>Precio</th>
             <th>Subtotal</th>
         </tr>
@@ -71,69 +64,100 @@
     const API = "/detalleventas";
 
     function calcular() {
-        const c = Number(document.getElementById("cantidad").value || 0);
-        const p = Number(document.getElementById("precio").value || 0);
+        const c = parseFloat(document.getElementById("cantidad").value || 0);
+        const p = parseFloat(document.getElementById("precio").value || 0);
         document.getElementById("subtotal").value = (c * p).toFixed(2);
     }
 
     function cargar() {
-        fetch(API)
-            .then(r => r.json())
-            .then(data => {
-                const t = document.getElementById("tabla");
-                t.innerHTML = "";
-                data.forEach(d => {
-                    t.innerHTML += `
-                    <tr>
-                        <td>${d.codigoDetalleVenta}</td>
-                        <td>${d.venta.codigoVenta}</td>
-                        <td>${d.producto.codigoProducto}</td>
-                        <td>${d.cantidad}</td>
-                        <td>Q${d.precioUnitario}</td>
-                        <td>Q${d.subtotal}</td>
-                    </tr>`;
-                });
-            });
+        fetch(API).then(r => r.json()).then(data => dibujarTabla(data));
+    }
+
+    function dibujarTabla(data) {
+        let tabla = document.getElementById("tabla");
+        tabla.innerHTML = "";
+        data.forEach(d => {
+            const vId = d.venta ? d.venta.codigoVenta : '';
+            const pId = d.producto ? d.producto.codigoProducto : '';
+            tabla.innerHTML += `
+                <tr onclick="seleccionar(${d.codigoDetalleVenta}, ${vId}, ${pId}, ${d.cantidad}, ${d.precioUnitario}, ${d.subtotal})" style="cursor:pointer">
+                    <td>${d.codigoDetalleVenta}</td>
+                    <td>${vId}</td>
+                    <td>${pId}</td>
+                    <td>${d.cantidad}</td>
+                    <td>${d.precioUnitario}</td>
+                    <td>${d.subtotal}</td>
+                </tr>`;
+        });
+    }
+
+    function seleccionar(id, vId, pId, cant, precio, sub) {
+        document.getElementById("codigo").value = id;
+        document.getElementById("idVenta").value = vId;
+        document.getElementById("idProd").value = pId;
+        document.getElementById("cantidad").value = cant;
+        document.getElementById("precio").value = precio;
+        document.getElementById("subtotal").value = sub;
+    }
+
+    function obtenerJson() {
+        const id = document.getElementById("codigo").value;
+        const vId = document.getElementById("idVenta").value;
+        const pId = document.getElementById("idProd").value;
+
+        return {
+            codigoDetalleVenta: id ? parseInt(id) : null,
+            cantidad: parseInt(document.getElementById("cantidad").value || 0),
+            precioUnitario: parseFloat(document.getElementById("precio").value || 0),
+            subtotal: parseFloat(document.getElementById("subtotal").value || 0),
+            venta: { codigoVenta: parseInt(vId) },
+            producto: { codigoProducto: parseInt(pId) }
+        };
     }
 
     function guardar() {
-
-        const detalle = {
-            cantidad: Number(document.getElementById("cantidad").value),
-            precioUnitario: Number(document.getElementById("precio").value),
-            venta: {
-                codigoVenta: Number(document.getElementById("idVenta").value)
-            },
-            producto: {
-                codigoProducto: Number(document.getElementById("idProd").value)
-            }
-        };
-
+        const data = obtenerJson();
         fetch(API, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(detalle)
+            body: JSON.stringify(data)
         })
-        .then(r => {
-            if (!r.ok) return r.text().then(t => { throw t });
-            return r.json();
-        })
-        .then(() => {
-            alert("Detalle guardado correctamente");
-            limpiar();
-            cargar();
-        })
-        .catch(err => alert("Error del servidor: " + err));
+            .then(r => r.json().then(res => {
+                if (r.ok) {
+                    alert("Guardado");
+                    cargar();
+                } else {
+                    // Esto te mostrará el mensaje exacto del servidor (Spring)
+                    console.error("Detalle del error:", res);
+                    alert("Error del servidor: " + (res.message || "Revisa la consola F12"));
+                }
+            }))
+            .catch(err => alert("Error de conexión"));
+    }
+
+    function actualizar() {
+        const id = document.getElementById("codigo").value;
+        if(!id) return alert("Seleccione un registro");
+
+        fetch(`${API}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(obtenerJson())
+        }).then(r => r.ok ? cargar() : alert("Error al actualizar"));
+    }
+
+    function eliminar() {
+        const id = document.getElementById("codigo").value;
+        if (id && confirm("¿Eliminar registro?")) {
+            fetch(`${API}/${id}`, { method: "DELETE" }).then(() => cargar());
+        }
     }
 
     function limpiar() {
-        document.getElementById("cantidad").value = "";
-        document.getElementById("precio").value = "";
-        document.getElementById("subtotal").value = "";
+        document.querySelectorAll('input').forEach(i => i.value = "");
     }
 
     cargar();
 </script>
-
 </body>
 </html>

@@ -1,56 +1,74 @@
 <!DOCTYPE html>
-<html lang="es">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>KinalApp | Gestión de Ventas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="p-4 bg-light">
-
-<div class="container bg-white p-4 shadow rounded">
+<div class="container bg-white p-4 shadow-sm rounded">
     <h2 class="mb-4 text-primary">Gestión de Ventas</h2>
 
-    <!-- FORMULARIO -->
-    <div class="row g-3 mb-4">
+    <div class="row g-2 mb-4 p-3 border rounded bg-light">
+        <div class="col-md-4">
+            <input type="number" id="searchId" class="form-control" placeholder="ID de venta a buscar...">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" onclick="buscarPorId()">Buscar ID</button>
+        </div>
         <div class="col-md-3">
-            <label class="form-label">Fecha</label>
+            <select id="searchEstado" class="form-select">
+                <option value="">Filtrar por Estado...</option>
+                <option value="1">1 - Activa</option>
+                <option value="0">0 - Inactiva</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button class="btn btn-info w-100 text-white" onclick="buscarPorEstado()">Filtrar Estado</button>
+        </div>
+    </div>
+
+    <div class="row g-2 mb-3">
+        <div class="col-md-2">
+            <label class="small text-muted">ID Venta</label>
+            <input type="number" id="codigoVenta" class="form-control" placeholder="Automático" readonly>
+        </div>
+        <div class="col-md-3">
+            <label class="small text-muted">Fecha</label>
             <input type="date" id="fecha" class="form-control">
         </div>
-
         <div class="col-md-3">
-            <label class="form-label">DPI Cliente</label>
-            <input type="text" id="cliente" class="form-control" placeholder="Ingrese DPI">
+            <label class="small text-muted">DPI Cliente</label>
+            <input type="text" id="clienteDpi" class="form-control" placeholder="DPI del cliente">
         </div>
-
-        <div class="col-md-3">
-            <label class="form-label">ID Usuario</label>
-            <input type="number" id="usuario" class="form-control" placeholder="Código usuario">
+        <div class="col-md-2">
+            <label class="small text-muted">ID Usuario</label>
+            <input type="number" id="usuarioId" class="form-control" placeholder="ID usuario">
         </div>
-
-        <div class="col-md-3">
-            <label class="form-label">Estado</label>
+        <div class="col-md-2">
+            <label class="small text-muted">Estado</label>
             <select id="estado" class="form-select">
-                <option value="1">Activa</option>
-                <option value="0">Inactiva</option>
+                <option value="1">1 - Activa</option>
+                <option value="0">0 - Inactiva</option>
             </select>
         </div>
     </div>
 
-    <!-- BOTONES -->
     <div class="mb-4">
-        <button class="btn btn-success me-2" onclick="guardar()">Guardar</button>
-        <button class="btn btn-secondary" onclick="cargar()">Refrescar</button>
-        <a href="/menu" class="btn btn-dark ms-2">Regresar</a>
+        <button onclick="guardar()" class="btn btn-success">Guardar</button>
+        <button onclick="actualizar()" class="btn btn-warning">Actualizar</button>
+        <button onclick="eliminar()" class="btn btn-danger">Eliminar</button>
+        <button onclick="cargar()" class="btn btn-secondary">Limpiar/Ver Todos</button>
+        <a href="/menu" class="btn btn-dark">Regresar al Menú</a>
     </div>
 
-    <!-- TABLA -->
-    <table class="table table-bordered table-hover">
+    <table class="table table-hover table-bordered">
         <thead class="table-dark">
         <tr>
-            <th>ID</th>
+            <th>ID Venta</th>
             <th>Fecha</th>
-            <th>Cliente</th>
-            <th>Usuario</th>
+            <th>DPI Cliente</th>
+            <th>ID Usuario</th>
             <th>Estado</th>
         </tr>
         </thead>
@@ -61,70 +79,107 @@
 <script>
     const API = "/ventas";
 
-    /* ---------------- LISTAR ---------------- */
     function cargar() {
+        limpiarFormulario();
         fetch(API)
             .then(r => r.json())
-            .then(data => {
-                const tabla = document.getElementById("tabla");
-                tabla.innerHTML = "";
-                data.forEach(v => {
-                    tabla.innerHTML += `
-                        <tr>
-                            <td>${v.codigoVenta}</td>
-                            <td>${v.fechaVenta}</td>
-                            <td>${v.cliente?.dpiCliente ?? ""}</td>
-                            <td>${v.usuario?.codigoUsuario ?? ""}</td>
-                            <td>
-                                <span class="badge ${v.estado == 1 ? 'bg-success' : 'bg-danger'}">
-                                    ${v.estado}
-                                </span>
-                            </td>
-                        </tr>`;
-                });
-            });
+            .then(data => dibujarTabla(data))
+            .catch(err => console.error("Error al cargar:", err));
     }
 
-    /* ---------------- GUARDAR ---------------- */
-    function guardar() {
-        const venta = {
+    function buscarPorId() {
+        const id = document.getElementById("searchId").value;
+        if (!id) return alert("Ingrese un ID de venta");
+        fetch(`${API}/${id}`)
+            .then(r => r.ok ? r.json() : null)
+            .then(data => data ? dibujarTabla([data]) : alert("Venta no encontrada"));
+    }
+
+    function buscarPorEstado() {
+        const est = document.getElementById("searchEstado").value;
+        if (est === "") return alert("Seleccione un estado");
+        fetch(`${API}/estado/${est}`)
+            .then(r => r.json())
+            .then(data => dibujarTabla(data));
+    }
+
+    function dibujarTabla(data) {
+        let tabla = document.getElementById("tabla");
+        tabla.innerHTML = "";
+        data.forEach(v => {
+
+            const dpi = v.cliente ? v.cliente.dpiCliente : "N/A";
+            const user = v.usuario ? v.usuario.codigoUsuario : "N/A";
+
+            tabla.innerHTML += `
+                <tr onclick="seleccionar('${v.codigoVenta}','${v.fechaVenta}','${dpi}','${user}',${v.estado})" style="cursor:pointer">
+                    <td>${v.codigoVenta}</td>
+                    <td>${v.fechaVenta}</td>
+                    <td>${dpi}</td>
+                    <td>${user}</td>
+                    <td><span class="badge ${v.estado == 1 ? 'bg-success' : 'bg-danger'}">${v.estado}</span></td>
+                </tr>`;
+        });
+    }
+
+    function seleccionar(id, fecha, dpi, user, est) {
+        document.getElementById("codigoVenta").value = id;
+        document.getElementById("fecha").value = fecha;
+        document.getElementById("clienteDpi").value = dpi;
+        document.getElementById("usuarioId").value = user;
+        document.getElementById("estado").value = est;
+    }
+
+    function obtenerJson() {
+        return {
+            codigoVenta: document.getElementById("codigoVenta").value || null,
             fechaVenta: document.getElementById("fecha").value,
-            estado: Number(document.getElementById("estado").value),
+            estado: parseInt(document.getElementById("estado").value),
             cliente: {
-                dpiCliente: document.getElementById("cliente").value
+                dpiCliente: document.getElementById("clienteDpi").value
             },
             usuario: {
-                codigoUsuario: Number(document.getElementById("usuario").value)
+                codigoUsuario: parseInt(document.getElementById("usuarioId").value)
             }
         };
-
-        fetch(API, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(venta)
-        })
-        .then(r => {
-            if (!r.ok) return r.text().then(t => { throw t });
-            return r.json();
-        })
-        .then(() => {
-            alert("Venta guardada correctamente");
-            limpiar();
-            cargar();
-        })
-        .catch(err => alert("Error del servidor: " + err));
     }
 
-    /* ---------------- LIMPIAR ---------------- */
-    function limpiar() {
+    function guardar() {
+        fetch(API, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(obtenerJson())
+        }).then(r => r.ok ? cargar() : alert("Error al guardar. Verifique DPI e ID Usuario."));
+    }
+
+    function actualizar() {
+        const id = document.getElementById("codigoVenta").value;
+        if(!id) return alert("Seleccione una venta de la tabla para actualizar");
+
+        fetch(`${API}/${id}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(obtenerJson())
+        }).then(r => r.ok ? cargar() : alert("Error al actualizar"));
+    }
+
+    function eliminar() {
+        const id = document.getElementById("codigoVenta").value;
+        if (!id) return alert("Seleccione una venta para eliminar");
+        if (confirm("¿Desea eliminar esta venta?")) {
+            fetch(`${API}/${id}`, { method: "DELETE" }).then(() => cargar());
+        }
+    }
+
+    function limpiarFormulario() {
+        document.getElementById("codigoVenta").value = "";
         document.getElementById("fecha").value = "";
-        document.getElementById("cliente").value = "";
-        document.getElementById("usuario").value = "";
+        document.getElementById("clienteDpi").value = "";
+        document.getElementById("usuarioId").value = "";
         document.getElementById("estado").value = "1";
     }
 
     cargar();
 </script>
-
 </body>
 </html>

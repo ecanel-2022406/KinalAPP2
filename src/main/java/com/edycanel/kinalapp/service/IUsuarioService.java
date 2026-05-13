@@ -25,4 +25,6 @@ public interface IUsuarioService {
     boolean existePorCodigoUsuario(Integer codigoUsuario);
 
     Optional<Usuario> login(String username, String password);
+
+    Optional<Usuario> buscarPorUsername(String username);
 }

@@ -89,9 +89,6 @@ public class ClienteController {
 
     }
 
-
-
-
     // Actualizar cliente a través de DPI
     @PutMapping("/{dpi}")
     public ResponseEntity<?> actualizar(@PathVariable String dpi, @RequestBody Cliente cliente){
