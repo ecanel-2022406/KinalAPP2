@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos</title>
+
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+
+<div class="contenedor">
+
+    <h2>Productos</h2>
+
+    <input type="number" id="buscarId" placeholder="Buscar ID">
+
+    <button onclick="buscarPorId()">Buscar</button>
+
+    <select id="buscarEstado">
+        <option value="">Estado</option>
+        <option value="1">Activo</option>
+        <option value="0">Inactivo</option>
+    </select>
+
+    <button onclick="buscarPorEstado()">Buscar Estado</button>
+
+    <hr>
+
+    <input type="number" id="codigo" placeholder="ID">
+
+    <input type="text" id="nombre" placeholder="Nombre">
+
+    <input type="number" id="precio" placeholder="Precio">
+
+    <input type="number" id="stock" placeholder="Stock">
+
+    <select id="estado">
+        <option value="1">Activo</option>
+        <option value="0">Inactivo</option>
+    </select>
+
+    <br>
+
+    <button onclick="guardar()">Guardar</button>
+
+    <button onclick="actualizar()">Actualizar</button>
+
+    <button onclick="eliminar()">Eliminar</button>
+
+    <button onclick="cargar()">Refrescar</button>
+
+    <a href="/menu">Regresar</a>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Estado</th>
+        </tr>
+        </thead>
+
+        <tbody id="tabla"></tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    const API = "/productos";
+
+    function cargar(){
+
+        fetch(API)
+            .then(r => r.json())
+            .then(data => dibujar(data));
+    }
+
+    function dibujar(data){
+
+        let tabla = document.getElementById("tabla");
+
+        tabla.innerHTML = "";
+
+        data.forEach(p => {
+
+            tabla.innerHTML += `
+            <tr onclick="seleccionar(${p.codigoProducto},'${p.nombreProducto}',${p.precio},${p.stock},${p.estado})">
+
+                <td>${p.codigoProducto}</td>
+
+                <td>${p.nombreProducto}</td>
+
+                <td>${p.precio}</td>
+
+                <td>${p.stock}</td>
+
+                <td>${p.estado}</td>
+
+            </tr>
+        `;
+        });
+    }
+
+    function seleccionar(c,n,p,s,e){
+
+        document.getElementById("codigo").value = c;
+
+        document.getElementById("nombre").value = n;
+
+        document.getElementById("precio").value = p;
+
+        document.getElementById("stock").value = s;
+
+        document.getElementById("estado").value = e;
+    }
+
+    function obtener(){
+
+        return{
+
+            codigoProducto: document.getElementById("codigo").value,
+
+            nombreProducto: document.getElementById("nombre").value,
+
+            precio: document.getElementById("precio").value,
+
+            stock: document.getElementById("stock").value,
+
+            estado: document.getElementById("estado").value
+        };
+    }
+
+    function guardar(){
+
+        fetch(API,{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
+    }
+
+    function actualizar(){
+
+        const id = document.getElementById("codigo").value;
+
+        fetch(`${API}/${id}`,{
+
+            method:"PUT",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
+    }
+
+    function eliminar(){
+
+        const id = document.getElementById("codigo").value;
+
+        fetch(`${API}/${id}`,{
+            method:"DELETE"
+        }).then(() => cargar());
+    }
+
+    function buscarPorId(){
+
+        const id = document.getElementById("buscarId").value;
+
+        fetch(`${API}/${id}`)
+            .then(r => r.json())
+            .then(data => dibujar([data]));
+    }
+
+    function buscarPorEstado(){
+
+        const estado = document.getElementById("buscarEstado").value;
+
+        fetch(`${API}/estado/${estado}`)
+            .then(r => r.json())
+            .then(data => dibujar(data));
+    }
+
+    cargar();
+
+</script>
+
+</body>
+</html>

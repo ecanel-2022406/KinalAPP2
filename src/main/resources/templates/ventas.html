@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Ventas</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+
+<div class="contenedor">
+
+    <h2>Ventas</h2>
+
+    <input type="number" id="buscarId" placeholder="Buscar ID">
+
+    <button onclick="buscarPorId()">Buscar</button>
+
+    <select id="buscarEstado">
+        <option value="">Estado</option>
+        <option value="1">Activa</option>
+        <option value="0">Inactiva</option>
+    </select>
+
+    <button onclick="buscarPorEstado()">Buscar Estado</button>
+
+    <hr>
+
+    <input type="number" id="codigoVenta" placeholder="ID Venta">
+
+    <input type="date" id="fecha">
+
+    <input type="text" id="clienteDpi" placeholder="DPI Cliente">
+
+    <input type="number" id="usuarioId" placeholder="ID Usuario">
+
+    <select id="estado">
+        <option value="1">Activa</option>
+        <option value="0">Inactiva</option>
+    </select>
+
+    <br>
+
+    <button onclick="guardar()">Guardar</button>
+
+    <button onclick="actualizar()">Actualizar</button>
+
+    <button onclick="eliminar()">Eliminar</button>
+
+    <button onclick="cargar()">Refrescar</button>
+
+    <a href="/menu">Regresar</a>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>DPI Cliente</th>
+            <th>ID Usuario</th>
+            <th>Estado</th>
+        </tr>
+        </thead>
+
+        <tbody id="tabla"></tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    const API = "/ventas";
+
+    function cargar(){
+
+        fetch(API)
+            .then(r => r.json())
+            .then(data => dibujar(data));
+    }
+
+    function dibujar(data){
+
+        let tabla = document.getElementById("tabla");
+
+        tabla.innerHTML = "";
+
+        data.forEach(v => {
+
+            let dpi = v.cliente ? v.cliente.dpiCliente : "";
+
+            let user = v.usuario ? v.usuario.codigoUsuario : "";
+
+            tabla.innerHTML += `
+                <tr onclick="seleccionar('${v.codigoVenta}','${v.fechaVenta}','${dpi}','${user}','${v.estado}')">
+
+                    <td>${v.codigoVenta}</td>
+
+                    <td>${v.fechaVenta}</td>
+
+                    <td>${dpi}</td>
+
+                    <td>${user}</td>
+
+                    <td>${v.estado}</td>
+
+                </tr>
+            `;
+        });
+    }
+
+    function seleccionar(id,fecha,dpi,user,estado){
+
+        document.getElementById("codigoVenta").value = id;
+
+        document.getElementById("fecha").value = fecha;
+
+        document.getElementById("clienteDpi").value = dpi;
+
+        document.getElementById("usuarioId").value = user;
+
+        document.getElementById("estado").value = estado;
+    }
+
+    function obtener(){
+
+        return{
+
+            codigoVenta: document.getElementById("codigoVenta").value,
+
+            fechaVenta: document.getElementById("fecha").value,
+
+            estado: document.getElementById("estado").value,
+
+            cliente:{
+                dpiCliente: document.getElementById("clienteDpi").value
+            },
+
+            usuario:{
+                codigoUsuario: document.getElementById("usuarioId").value
+            }
+        };
+    }
+
+    function guardar(){
+
+        fetch(API,{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
+    }
+
+    function actualizar(){
+
+        const id = document.getElementById("codigoVenta").value;
+
+        fetch(`${API}/${id}`,{
+
+            method:"PUT",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
+    }
+
+    function eliminar(){
+
+        const id = document.getElementById("codigoVenta").value;
+
+        fetch(`${API}/${id}`,{
+            method:"DELETE"
+        }).then(() => cargar());
+    }
+
+    function buscarPorId(){
+
+        const id = document.getElementById("buscarId").value;
+
+        fetch(`${API}/${id}`)
+            .then(r => r.json())
+            .then(data => dibujar([data]));
+    }
+
+    function buscarPorEstado(){
+
+        const estado = document.getElementById("buscarEstado").value;
+
+        fetch(`${API}/estado/${estado}`)
+            .then(r => r.json())
+            .then(data => dibujar(data));
+    }
+
+    cargar();
+
+</script>
+
+</body>
+</html>

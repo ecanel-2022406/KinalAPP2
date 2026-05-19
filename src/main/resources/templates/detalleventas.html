@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle Ventas</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+
+<div class="contenedor">
+
+    <h2>Detalle Ventas</h2>
+
+    <input type="number" id="codigo" placeholder="ID">
+
+    <input type="number" id="idVenta" placeholder="ID Venta">
+
+    <input type="number" id="idProducto" placeholder="ID Producto">
+
+    <input type="number" id="cantidad" placeholder="Cantidad" oninput="calcular()">
+
+    <input type="number" id="precio" placeholder="Precio" oninput="calcular()">
+
+    <input type="number" id="subtotal" placeholder="Subtotal" readonly>
+
+    <br>
+
+    <button onclick="guardar()">Guardar</button>
+
+    <button onclick="actualizar()">Actualizar</button>
+
+    <button onclick="eliminar()">Eliminar</button>
+
+    <button onclick="cargar()">Refrescar</button>
+
+    <a href="/menu">Regresar</a>
+
+    <table>
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Venta</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+        </tr>
+        </thead>
+
+        <tbody id="tabla"></tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    const API = "/detalleventas";
+
+    function calcular(){
+
+        const cantidad = parseFloat(document.getElementById("cantidad").value || 0);
+
+        const precio = parseFloat(document.getElementById("precio").value || 0);
+
+        document.getElementById("subtotal").value = cantidad * precio;
+    }
+
+    function cargar(){
+
+        fetch(API)
+            .then(r => r.json())
+            .then(data => dibujar(data));
+    }
+
+    function dibujar(data){
+
+        let tabla = document.getElementById("tabla");
+
+        tabla.innerHTML = "";
+
+        data.forEach(d => {
+
+            let venta = d.venta ? d.venta.codigoVenta : "";
+
+            let producto = d.producto ? d.producto.codigoProducto : "";
+
+            tabla.innerHTML += `
+                <tr onclick="seleccionar('${d.codigoDetalleVenta}','${venta}','${producto}','${d.cantidad}','${d.precioUnitario}','${d.subtotal}')">
+
+                    <td>${d.codigoDetalleVenta}</td>
+
+                    <td>${venta}</td>
+
+                    <td>${producto}</td>
+
+                    <td>${d.cantidad}</td>
+
+                    <td>${d.precioUnitario}</td>
+
+                    <td>${d.subtotal}</td>
+
+                </tr>
+            `;
+        });
+    }
+
+    function seleccionar(id,venta,producto,cantidad,precio,subtotal){
+
+        document.getElementById("codigo").value = id;
+
+        document.getElementById("idVenta").value = venta;
+
+        document.getElementById("idProducto").value = producto;
+
+        document.getElementById("cantidad").value = cantidad;
+
+        document.getElementById("precio").value = precio;
+
+        document.getElementById("subtotal").value = subtotal;
+    }
+
+    function obtener(){
+
+        return{
+
+            codigoDetalleVenta: document.getElementById("codigo").value,
+
+            cantidad: document.getElementById("cantidad").value,
+
+            precioUnitario: document.getElementById("precio").value,
+
+            subtotal: document.getElementById("subtotal").value,
+
+            venta:{
+                codigoVenta: document.getElementById("idVenta").value
+            },
+
+            producto:{
+                codigoProducto: document.getElementById("idProducto").value
+            }
+        };
+    }
+
+    function guardar(){
+
+        fetch(API,{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
+    }
+
+    function actualizar(){
+
+        const id = document.getElementById("codigo").value;
+
+        fetch(`${API}/${id}`,{
+
+            method:"PUT",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(obtener())
+
+        }).then(() => cargar());
+    }
+
+    function eliminar(){
+
+        const id = document.getElementById("codigo").value;
+
+        fetch(`${API}/${id}`,{
+            method:"DELETE"
+        }).then(() => cargar());
+    }
+
+    cargar();
+
+</script>
+
+</body>
+</html>
